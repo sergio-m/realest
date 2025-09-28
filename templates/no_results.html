@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert alert-warning">
+  No properties were found for zip code <strong>{{ zip_code }}</strong>.
+</div>
+<a class="btn btn-secondary" href="{{ url_for('index') }}">🔙 Back to Search</a>
+{% endblock %}

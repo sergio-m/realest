@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: docker.io/library/postgres:17-alpine
+    container_name: realestate_db
+    environment:
+      POSTGRES_DB: realestate
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: rulez
+    volumes:
+      - postgres_data:/var/lib/postgresql/data:Z
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:Z
+    ports:
+      - "5433:5432"
+    networks:
+      - realestate_network
+
+  web:
+    build: .
+    container_name: realestate_web
+    environment:
+      DATABASE_URL: postgresql://postgres:rulez@postgres:5432/realestate
+      SECRET_KEY: your-super-secret-key-change-in-production
+      DEBUG: "False"
+      GOOGLE_PLACES_API_KEY: $REDACTED_GOOGLE_API_KEY
+    ports:
+      - "5005:5005"
+    depends_on:
+      - postgres
+    networks:
+      - realestate_network
+    volumes:
+      - ./logs:/app/logs:Z
+
+volumes:
+  postgres_data:
+
+networks:
+  realestate_network:
+    driver: bridge

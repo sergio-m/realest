@@ -1,0 +1,40 @@
+/* Custom styles for Real Estate Analyzer */
+
+body {
+  background-color: #f8f9fa;
+}
+
+/* Navbar branding */
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.4rem;
+}
+
+/* Table tweaks */
+.table th {
+  background: #343a40;
+  color: #fff;
+}
+
+/* Score indicators */
+.score-high {
+  color: green;
+  font-weight: bold;
+}
+.score-medium {
+  color: orange;
+  font-weight: bold;
+}
+.score-low {
+  color: red;
+  font-weight: bold;
+}
+
+/* Footer */
+footer {
+  background: #343a40;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+  margin-top: 2rem;
+}

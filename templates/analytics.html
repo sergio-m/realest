@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Analytics for {{ zip_code }}</h3>
+
+<h5>Market Statistics</h5>
+<ul>
+  <li>Average Price: ${{ market_stats.avg_price|round(0) }}</li>
+  <li>Average Price per SqFt: ${{ market_stats.avg_price_per_sqft|round(2) }}</li>
+  <li>Total Properties: {{ analytics.total_properties }}</li>
+</ul>
+
+<h5>Price Distribution</h5>
+<ul>
+  <li><200k: {{ analytics.price_ranges.under_200k }}</li>
+  <li>200k–400k: {{ analytics.price_ranges['200k_400k'] }}</li>
+  <li>400k–600k: {{ analytics.price_ranges['400k_600k'] }}</li>
+  <li>>600k: {{ analytics.price_ranges.over_600k }}</li>
+</ul>
+
+<h5>Top Properties by Score</h5>
+<table class="table table-sm">
+  <thead><tr><th>Address</th><th>Price</th><th>Score</th><th></th></tr></thead>
+  <tbody>
+  {% for tp in analytics.top_properties %}
+    <tr>
+      <td>{{ tp.address }}</td>
+      <td>${{ "{:,.0f}".format(tp.price) }}</td>
+      <td>{{ tp.investment_score }}</td>
+      <td><a href="{{ url_for('property_detail', property_id=tp.id) }}" class="btn btn-sm btn-primary">View</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

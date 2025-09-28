@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Property Details</h3>
+<div class="card">
+  <div class="card-body">
+    <h5>{{ property.address }}</h5>
+    <p>Price: ${{ "{:,.0f}".format(property.price) }}</p>
+    <p>SqFt: {{ property.square_feet }} | Beds: {{ property.bedrooms }} | Baths: {{ property.bathrooms }}</p>
+    <p>Year Built: {{ property.year_built }} | Lot Size: {{ property.lot_size }}</p>
+    <p>Investment Score: {{ property.investment_score }}/100</p>
+  </div>
+</div>
+
+<h5 class="mt-3">Estimated Mortgage</h5>
+<ul>
+  <li>Monthly Payment: ${{ mortgage_info.total_monthly_payment|round(0) }}</li>
+  <li>Principal & Interest: ${{ mortgage_info.monthly_payment|round(0) }}</li>
+  <li>Taxes: ${{ mortgage_info.monthly_property_tax|round(0) }}</li>
+  <li>Insurance: ${{ mortgage_info.monthly_insurance|round(0) }}</li>
+  <li>HOA: ${{ mortgage_info.monthly_hoa|round(0) }}</li>
+</ul>
+{% endblock %}

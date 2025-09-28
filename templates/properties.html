@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Properties in Zip Code {{ zip_code }}</h3>
+<p><a href="{{ url_for('map_view', zip_code=zip_code) }}" class="btn btn-sm btn-outline-success">View Map</a>
+   <a href="{{ url_for('analytics', zip_code=zip_code) }}" class="btn btn-sm btn-outline-info">View Analytics</a></p>
+
+<h5>Market Stats</h5>
+<ul>
+  <li>Avg Price: ${{ market_stats.avg_price|round(0) }}</li>
+  <li>Avg Price/SqFt: ${{ market_stats.avg_price_per_sqft|round(2) }}</li>
+  <li>Avg Days on Market: {{ market_stats.avg_days_on_market|round(0) }}</li>
+</ul>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Address</th>
+      <th>Price</th>
+      <th>Sq Ft</th>
+      <th>$/SqFt</th>
+      <th>Beds/Baths</th>
+      <th>Investment Score</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for p in properties %}
+    <tr>
+      <td>{{ p.address }}</td>
+      <td>${{ "{:,.0f}".format(p.price) }}</td>
+      <td>{{ p.square_feet }}</td>
+      <td>${{ p.price_per_sqft }}</td>
+      <td>{{ p.bedrooms }} / {{ p.bathrooms }}</td>
+      <td>{{ p.investment_score }}/100</td>
+      <td><a href="{{ url_for('property_detail', property_id=p.id) }}" class="btn btn-sm btn-primary">View</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
