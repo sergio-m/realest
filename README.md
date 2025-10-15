@@ -14,4 +14,5 @@ podman-compose -f podman-compose.yml ps
 #### Check services env
 podman-compose -f podman-compose.yml exec web env
 
-
+### Stop services
+podman-compose -f podman-compose.yml down

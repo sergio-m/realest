@@ -1,7 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-<h3>Map of {{ property_count }} Properties in {{ zip_code }}</h3>
-<div class="mt-3" style="height: 600px;">
-  {{ map_html | safe }}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+  <h3 style="margin: 0; font-size: 1.8rem; font-weight: 700;">
+    📍 Map View - {{ property_count }} Properties in {{ zip_code }}
+  </h3>
+  <a href="javascript:history.back()" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+    ← Back to Results
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    Interactive Property Map
+  </div>
+  <div class="card-body" style="padding: 0;">
+    <div style="height: 600px; border-radius: 0 0 15px 15px; overflow: hidden;">
+      {{ map_html | safe }}
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 1.5rem; padding: 1rem; background: var(--card-bg); border-radius: 10px; box-shadow: var(--shadow-md);">
+  <h5 style="margin-bottom: 1rem; font-weight: 700;">Map Legend</h5>
+  <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <div style="width: 20px; height: 20px; background: green; border-radius: 50%;"></div>
+      <span>Excellent Kobi Score (70+)</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <div style="width: 20px; height: 20px; background: orange; border-radius: 50%;"></div>
+      <span>Good Kobi Score (50-69)</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <div style="width: 20px; height: 20px; background: red; border-radius: 50%;"></div>
+      <span>Fair Kobi Score (<50)</span>
+    </div>
+  </div>
 </div>
 {% endblock %}

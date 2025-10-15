@@ -184,7 +184,7 @@ def create_app(config_name='default'):
                     <p><strong>Price:</strong> ${prop['price']:,.0f}</p>
                     <p><strong>Sq Ft:</strong> {prop['square_feet']:,}</p>
                     <p><strong>Price/Sq Ft:</strong> ${prop['price_per_sqft']:.2f}</p>
-                    <p><strong>Investment Score:</strong> {prop['investment_score']:.1f}/100</p>
+                    <p><strong>Kobi Score:</strong> {prop['investment_score']:.1f}/100</p>
                     <a href="/property/{prop['id']}" target="_blank">View Details</a>
                 </div>
                 """
@@ -219,6 +219,7 @@ def create_app(config_name='default'):
             logger.error(f"Error creating map view: {e}")
             flash('An error occurred while creating the map', 'error')
             return redirect(url_for('index'))
+
     
     @app.route('/analytics/<zip_code>')
     def analytics(zip_code):

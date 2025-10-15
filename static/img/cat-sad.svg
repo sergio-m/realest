@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32">
+  <!-- Sad cat for poor scores (0-39) -->
+  <g id="sad-cat">
+    <!-- Cat head -->
+    <ellipse cx="32" cy="36" rx="18" ry="16" fill="#1a1a1a"/>
+    
+    <!-- Left ear (drooping) -->
+    <path d="M 18 26 L 12 16 L 24 22 Z" fill="#1a1a1a"/>
+    <path d="M 18 26 L 14 18 L 22 23 Z" fill="#2a2a2a"/>
+    
+    <!-- Right ear (drooping) -->
+    <path d="M 46 26 L 52 16 L 40 22 Z" fill="#1a1a1a"/>
+    <path d="M 46 26 L 50 18 L 42 23 Z" fill="#2a2a2a"/>
+    
+    <!-- Sad eyes (downturned) -->
+    <ellipse cx="26" cy="33" rx="3" ry="4" fill="#ef4444"/>
+    <ellipse cx="26" cy="33" rx="1.5" ry="2" fill="#1a1a1a"/>
+    <path d="M 23 30 L 29 31" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/>
+    
+    <ellipse cx="38" cy="33" rx="3" ry="4" fill="#ef4444"/>
+    <ellipse cx="38" cy="33" rx="1.5" ry="2" fill="#1a1a1a"/>
+    <path d="M 35 31 L 41 30" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/>
+    
+    <!-- Frown -->
+    <path d="M 26 44 Q 32 41 38 44" stroke="#ef4444" stroke-width="2" fill="none" stroke-linecap="round"/>
+    
+    <!-- Whiskers (drooping) -->
+    <line x1="14" y1="38" x2="20" y2="36" stroke="#4a4a4a" stroke-width="1.5"/>
+    <line x1="14" y1="40" x2="20" y2="39" stroke="#4a4a4a" stroke-width="1.5"/>
+    <line x1="14" y1="42" x2="20" y2="42" stroke="#4a4a4a" stroke-width="1.5"/>
+    
+    <line x1="50" y1="38" x2="44" y2="36" stroke="#4a4a4a" stroke-width="1.5"/>
+    <line x1="50" y1="40" x2="44" y2="39" stroke="#4a4a4a" stroke-width="1.5"/>
+    <line x1="50" y1="42" x2="44" y2="42" stroke="#4a4a4a" stroke-width="1.5"/>
+    
+    <!-- Nose -->
+    <ellipse cx="32" cy="40" rx="2" ry="1.5" fill="#ff69b4"/>
+  </g>
+</svg>

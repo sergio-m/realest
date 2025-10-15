@@ -1,7 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="alert alert-warning">
-  No properties were found for zip code <strong>{{ zip_code }}</strong>.
+<div style="text-align: center; padding: 3rem 1rem;">
+  <img src="{{ url_for('static', filename='img/cat-sad.svg') }}" alt="No results" style="width: 120px; height: 120px; margin-bottom: 1.5rem; opacity: 0.7;">
+  
+  <h3 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary);">
+    No Properties Found
+  </h3>
+  
+  <p style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 2rem;">
+    We couldn't find any properties for zip code <strong style="color: var(--primary-color);">{{ zip_code }}</strong>.
+  </p>
+  
+  <a class="btn btn-primary" href="{{ url_for('index') }}">
+    ← Back to Search
+  </a>
 </div>
-<a class="btn btn-secondary" href="{{ url_for('index') }}">🔙 Back to Search</a>
 {% endblock %}

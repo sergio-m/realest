@@ -1,22 +1,134 @@
 {% extends "base.html" %}
 {% block content %}
-<h3>Property Details</h3>
+<div style="margin-bottom: 2rem;">
+  <a href="javascript:history.back()" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+    ← Back to Results
+  </a>
+</div>
+
+<h3 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem;">Property Details</h3>
+
+{% set score = property.investment_score|float %}
+{% if score >= 80 %}
+  {% set cat_icon = 'cat-happy.svg' %}
+  {% set score_class = 'kobi-score-excellent' %}
+  {% set score_label = 'Excellent Investment' %}
+{% elif score >= 60 %}
+  {% set cat_icon = 'cat-good.svg' %}
+  {% set score_class = 'kobi-score-good' %}
+  {% set score_label = 'Good Investment' %}
+{% elif score >= 40 %}
+  {% set cat_icon = 'cat-neutral.svg' %}
+  {% set score_class = 'kobi-score-fair' %}
+  {% set score_label = 'Fair Investment' %}
+{% else %}
+  {% set cat_icon = 'cat-sad.svg' %}
+  {% set score_class = 'kobi-score-poor' %}
+  {% set score_label = 'Poor Investment' %}
+{% endif %}
+
 <div class="card">
+  <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <span>{{ property.address }}</span>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <img src="{{ url_for('static', filename='img/' + cat_icon) }}" alt="Kobi" style="width: 40px; height: 40px;">
+      <div style="text-align: right;">
+        <div style="font-size: 0.75rem; opacity: 0.9;">Kobi Score</div>
+        <div style="font-size: 1.5rem; font-weight: 800;">{{ "{:.0f}".format(score) }}/100</div>
+      </div>
+    </div>
+  </div>
   <div class="card-body">
-    <h5>{{ property.address }}</h5>
-    <p>Price: ${{ "{:,.0f}".format(property.price) }}</p>
-    <p>SqFt: {{ property.square_feet }} | Beds: {{ property.bedrooms }} | Baths: {{ property.bathrooms }}</p>
-    <p>Year Built: {{ property.year_built }} | Lot Size: {{ property.lot_size }}</p>
-    <p>Investment Score: {{ property.investment_score }}/100</p>
+    <div class="stats-grid" style="margin-bottom: 1.5rem;">
+      <div class="stat-card">
+        <h5>Price</h5>
+        <div class="stat-value" style="font-size: 1.5rem;">${{ "{:,.0f}".format(property.price) }}</div>
+      </div>
+      <div class="stat-card">
+        <h5>Square Feet</h5>
+        <div class="stat-value" style="font-size: 1.5rem;">{{ "{:,}".format(property.square_feet) }}</div>
+      </div>
+      <div class="stat-card">
+        <h5>Price/SqFt</h5>
+        <div class="stat-value" style="font-size: 1.5rem;">${{ "{:.2f}".format(property.price_per_sqft) }}</div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+      <div>
+        <strong style="color: var(--text-secondary);">Bedrooms:</strong>
+        <span style="font-size: 1.1rem; font-weight: 600; margin-left: 0.5rem;">{{ property.bedrooms }}</span>
+      </div>
+      <div>
+        <strong style="color: var(--text-secondary);">Bathrooms:</strong>
+        <span style="font-size: 1.1rem; font-weight: 600; margin-left: 0.5rem;">{{ property.bathrooms }}</span>
+      </div>
+      <div>
+        <strong style="color: var(--text-secondary);">Year Built:</strong>
+        <span style="font-size: 1.1rem; font-weight: 600; margin-left: 0.5rem;">{{ property.year_built }}</span>
+      </div>
+      <div>
+        <strong style="color: var(--text-secondary);">Lot Size:</strong>
+        <span style="font-size: 1.1rem; font-weight: 600; margin-left: 0.5rem;">{{ property.lot_size }}</span>
+      </div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%); padding: 1.5rem; border-radius: 10px; text-align: center;">
+      <img src="{{ url_for('static', filename='img/' + cat_icon) }}" alt="Kobi" style="width: 60px; height: 60px; margin-bottom: 0.5rem;">
+      <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">
+        {{ score_label }}
+      </div>
+      <div class="kobi-score-badge {{ score_class }}" style="display: inline-flex; font-size: 1.3rem; padding: 0.75rem 1.5rem;">
+        Kobi Score: {{ "{:.0f}".format(score) }}/100
+      </div>
+    </div>
   </div>
 </div>
 
-<h5 class="mt-3">Estimated Mortgage</h5>
-<ul>
-  <li>Monthly Payment: ${{ mortgage_info.total_monthly_payment|round(0) }}</li>
-  <li>Principal & Interest: ${{ mortgage_info.monthly_payment|round(0) }}</li>
-  <li>Taxes: ${{ mortgage_info.monthly_property_tax|round(0) }}</li>
-  <li>Insurance: ${{ mortgage_info.monthly_insurance|round(0) }}</li>
-  <li>HOA: ${{ mortgage_info.monthly_hoa|round(0) }}</li>
-</ul>
+<div class="card mt-4">
+  <div class="card-header">
+    💰 Estimated Mortgage Calculator
+  </div>
+  <div class="card-body">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h5>Total Monthly Payment</h5>
+        <div class="stat-value" style="font-size: 1.8rem; color: var(--primary-color);">
+          ${{ "{:,.0f}".format(mortgage_info.total_monthly_payment) }}
+        </div>
+      </div>
+      <div class="stat-card">
+        <h5>Principal & Interest</h5>
+        <div class="stat-value" style="font-size: 1.5rem;">
+          ${{ "{:,.0f}".format(mortgage_info.monthly_payment) }}
+        </div>
+      </div>
+      <div class="stat-card">
+        <h5>Down Payment</h5>
+        <div class="stat-value" style="font-size: 1.5rem;">
+          ${{ "{:,.0f}".format(mortgage_info.down_payment) }}
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+      <div style="padding: 1rem; background: var(--light-bg); border-radius: 8px;">
+        <div style="color: var(--text-secondary); font-size: 0.875rem;">Property Tax</div>
+        <div style="font-size: 1.2rem; font-weight: 600;">${{ "{:,.0f}".format(mortgage_info.monthly_property_tax) }}/mo</div>
+      </div>
+      <div style="padding: 1rem; background: var(--light-bg); border-radius: 8px;">
+        <div style="color: var(--text-secondary); font-size: 0.875rem;">Insurance</div>
+        <div style="font-size: 1.2rem; font-weight: 600;">${{ "{:,.0f}".format(mortgage_info.monthly_insurance) }}/mo</div>
+      </div>
+      <div style="padding: 1rem; background: var(--light-bg); border-radius: 8px;">
+        <div style="color: var(--text-secondary); font-size: 0.875rem;">HOA Fees</div>
+        <div style="font-size: 1.2rem; font-weight: 600;">${{ "{:,.0f}".format(mortgage_info.monthly_hoa) }}/mo</div>
+      </div>
+      <div style="padding: 1rem; background: var(--light-bg); border-radius: 8px;">
+        <div style="color: var(--text-secondary); font-size: 0.875rem;">Interest Rate</div>
+        <div style="font-size: 1.2rem; font-weight: 600;">{{ mortgage_info.interest_rate }}%</div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -1,11 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text-center">
-  <h2>Search Properties by Zip Code</h2>
+<div class="hero-section">
+  <svg width="80" height="80" viewBox="0 0 64 64" style="margin-bottom: 1rem;">
+    <ellipse cx="32" cy="36" rx="18" ry="16" fill="#1a1a1a"/>
+    <path d="M 18 24 L 14 12 L 24 20 Z" fill="#1a1a1a"/>
+    <path d="M 46 24 L 50 12 L 40 20 Z" fill="#1a1a1a"/>
+    <path d="M 24 32 Q 26 34 28 32" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 36 32 Q 38 34 40 32" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 24 40 Q 32 46 40 40" stroke="#10b981" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="32" cy="38" rx="2" ry="1.5" fill="#ff69b4"/>
+  </svg>
+  <h2>Discover Your Perfect Investment</h2>
+  <p>Search properties and get instant Kobi Score ratings powered by AI analysis</p>
+  
   <form method="POST" action="{{ url_for('search_properties') }}" class="mt-3">
     <div class="input-group w-50 mx-auto">
-      <input type="text" class="form-control" name="zip_code" placeholder="Enter 5-digit Zip Code" required>
-      <button type="submit" class="btn btn-primary">Search</button>
+      <input type="text" class="form-control" name="zip_code" placeholder="Enter 5-digit Zip Code" required pattern="[0-9]{5}" maxlength="5">
+      <button type="submit" class="btn btn-primary">
+        <span>Search Properties</span>
+      </button>
     </div>
     <div class="form-check mt-2">
       <input class="form-check-input" type="checkbox" name="force_refresh" id="force_refresh">
@@ -14,5 +27,28 @@
       </label>
     </div>
   </form>
+</div>
+
+<div class="stats-grid mt-4">
+  <div class="stat-card">
+    <h5>Kobi Score</h5>
+    <p style="color: var(--text-secondary); margin-top: 0.5rem;">
+      Our proprietary AI-powered rating system that evaluates properties based on price, location, amenities, and market trends.
+    </p>
+  </div>
+  
+  <div class="stat-card">
+    <h5>Smart Analysis</h5>
+    <p style="color: var(--text-secondary); margin-top: 0.5rem;">
+      Get instant insights on property value, nearby amenities, and investment potential with our advanced algorithms.
+    </p>
+  </div>
+  
+  <div class="stat-card">
+    <h5>Real-Time Data</h5>
+    <p style="color: var(--text-secondary); margin-top: 0.5rem;">
+      Access up-to-date property listings with comprehensive market statistics and neighborhood information.
+    </p>
+  </div>
 </div>
 {% endblock %}

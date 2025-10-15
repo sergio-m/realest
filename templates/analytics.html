@@ -1,34 +1,166 @@
 {% extends "base.html" %}
 {% block content %}
-<h3>Analytics for {{ zip_code }}</h3>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+  <h3 style="margin: 0; font-size: 1.8rem; font-weight: 700;">Analytics for {{ zip_code }}</h3>
+  <a href="javascript:history.back()" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+    ← Back to Properties
+  </a>
+</div>
 
-<h5>Market Statistics</h5>
-<ul>
-  <li>Average Price: ${{ market_stats.avg_price|round(0) }}</li>
-  <li>Average Price per SqFt: ${{ market_stats.avg_price_per_sqft|round(2) }}</li>
-  <li>Total Properties: {{ analytics.total_properties }}</li>
-</ul>
+<div class="stats-grid">
+  <div class="stat-card">
+    <h5>Average Price</h5>
+    <div class="stat-value">${{ "{:,.0f}".format(market_stats.avg_price) }}</div>
+  </div>
+  <div class="stat-card">
+    <h5>Avg Price/SqFt</h5>
+    <div class="stat-value">${{ "{:.2f}".format(market_stats.avg_price_per_sqft) }}</div>
+  </div>
+  <div class="stat-card">
+    <h5>Total Properties</h5>
+    <div class="stat-value">{{ analytics.total_properties }}</div>
+  </div>
+</div>
 
-<h5>Price Distribution</h5>
-<ul>
-  <li><200k: {{ analytics.price_ranges.under_200k }}</li>
-  <li>200k–400k: {{ analytics.price_ranges['200k_400k'] }}</li>
-  <li>400k–600k: {{ analytics.price_ranges['400k_600k'] }}</li>
-  <li>>600k: {{ analytics.price_ranges.over_600k }}</li>
-</ul>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+  <div class="card">
+    <div class="card-header">
+      💵 Price Distribution
+    </div>
+    <div class="card-body">
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+          <span style="font-weight: 600;">Under $200k</span>
+          <span style="background: var(--success-color); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 700;">
+            {{ analytics.price_ranges.under_200k }}
+          </span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+          <span style="font-weight: 600;">$200k - $400k</span>
+          <span style="background: var(--primary-color); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 700;">
+            {{ analytics.price_ranges['200k_400k'] }}
+          </span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+          <span style="font-weight: 600;">$400k - $600k</span>
+          <span style="background: var(--warning-color); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 700;">
+            {{ analytics.price_ranges['400k_600k'] }}
+          </span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+          <span style="font-weight: 600;">Over $600k</span>
+          <span style="background: var(--danger-color); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 700;">
+            {{ analytics.price_ranges.over_600k }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<h5>Top Properties by Score</h5>
-<table class="table table-sm">
-  <thead><tr><th>Address</th><th>Price</th><th>Score</th><th></th></tr></thead>
-  <tbody>
-  {% for tp in analytics.top_properties %}
-    <tr>
-      <td>{{ tp.address }}</td>
-      <td>${{ "{:,.0f}".format(tp.price) }}</td>
-      <td>{{ tp.investment_score }}</td>
-      <td><a href="{{ url_for('property_detail', property_id=tp.id) }}" class="btn btn-sm btn-primary">View</a></td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+  <div class="card">
+    <div class="card-header">
+      🏠 Property Types
+    </div>
+    <div class="card-body">
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        {% for prop_type, count in analytics.property_types.items() %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+          <span style="font-weight: 600;">{{ prop_type }}</span>
+          <span style="background: var(--secondary-color); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 700;">
+            {{ count }}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header" style="display: flex; align-items: center; gap: 0.5rem;">
+    <img src="{{ url_for('static', filename='img/cat-happy.svg') }}" alt="Kobi" style="width: 32px; height: 32px;">
+    <span>Top Properties by Kobi Score</span>
+  </div>
+  <div style="overflow-x: auto;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Address</th>
+          <th>Price</th>
+          <th>Kobi Score</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for tp in analytics.top_properties %}
+        {% set score = tp.investment_score|float %}
+        {% if score >= 80 %}
+          {% set cat_icon = 'cat-happy.svg' %}
+          {% set score_class = 'kobi-score-excellent' %}
+        {% elif score >= 60 %}
+          {% set cat_icon = 'cat-good.svg' %}
+          {% set score_class = 'kobi-score-good' %}
+        {% elif score >= 40 %}
+          {% set cat_icon = 'cat-neutral.svg' %}
+          {% set score_class = 'kobi-score-fair' %}
+        {% else %}
+          {% set cat_icon = 'cat-sad.svg' %}
+          {% set score_class = 'kobi-score-poor' %}
+        {% endif %}
+        <tr>
+          <td>
+            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+              {{ loop.index }}
+            </div>
+          </td>
+          <td style="font-weight: 500;">{{ tp.address }}</td>
+          <td style="font-weight: 600; color: var(--primary-color);">${{ "{:,.0f}".format(tp.price) }}</td>
+          <td>
+            <div class="kobi-score-container">
+              <img src="{{ url_for('static', filename='img/' + cat_icon) }}" alt="Kobi" class="kobi-cat-icon">
+              <span class="kobi-score-badge {{ score_class }}">{{ "{:.0f}".format(score) }}</span>
+            </div>
+          </td>
+          <td>
+            <a href="{{ url_for('property_detail', property_id=tp.id) }}" class="btn btn-sm btn-primary">
+              View Details
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header">
+    📊 Kobi Score Distribution
+  </div>
+  <div class="card-body">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+      <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border-radius: 10px; border: 2px solid var(--success-color);">
+        <img src="{{ url_for('static', filename='img/cat-happy.svg') }}" alt="Excellent" style="width: 48px; height: 48px; margin-bottom: 0.5rem;">
+        <div style="font-size: 2rem; font-weight: 800; color: var(--success-color);">{{ analytics.score_ranges.excellent }}</div>
+        <div style="color: var(--text-secondary); font-weight: 600; margin-top: 0.25rem;">Excellent (80+)</div>
+      </div>
+      <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1)); border-radius: 10px; border: 2px solid var(--primary-color);">
+        <img src="{{ url_for('static', filename='img/cat-good.svg') }}" alt="Good" style="width: 48px; height: 48px; margin-bottom: 0.5rem;">
+        <div style="font-size: 2rem; font-weight: 800; color: var(--primary-color);">{{ analytics.score_ranges.good }}</div>
+        <div style="color: var(--text-secondary); font-weight: 600; margin-top: 0.25rem;">Good (60-79)</div>
+      </div>
+      <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1)); border-radius: 10px; border: 2px solid var(--warning-color);">
+        <img src="{{ url_for('static', filename='img/cat-neutral.svg') }}" alt="Fair" style="width: 48px; height: 48px; margin-bottom: 0.5rem;">
+        <div style="font-size: 2rem; font-weight: 800; color: var(--warning-color);">{{ analytics.score_ranges.fair }}</div>
+        <div style="color: var(--text-secondary); font-weight: 600; margin-top: 0.25rem;">Fair (40-59)</div>
+      </div>
+      <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1)); border-radius: 10px; border: 2px solid var(--danger-color);">
+        <img src="{{ url_for('static', filename='img/cat-sad.svg') }}" alt="Poor" style="width: 48px; height: 48px; margin-bottom: 0.5rem;">
+        <div style="font-size: 2rem; font-weight: 800; color: var(--danger-color);">{{ analytics.score_ranges.poor }}</div>
+        <div style="color: var(--text-secondary); font-weight: 600; margin-top: 0.25rem;">Poor (<40)</div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

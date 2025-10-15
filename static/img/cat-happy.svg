@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32">
+  <!-- Happy cat for excellent scores (80-100) -->
+  <g id="happy-cat">
+    <!-- Cat head -->
+    <ellipse cx="32" cy="36" rx="18" ry="16" fill="#1a1a1a"/>
+    
+    <!-- Left ear -->
+    <path d="M 18 24 L 14 12 L 24 20 Z" fill="#1a1a1a"/>
+    <path d="M 18 24 L 16 14 L 22 21 Z" fill="#2a2a2a"/>
+    
+    <!-- Right ear -->
+    <path d="M 46 24 L 50 12 L 40 20 Z" fill="#1a1a1a"/>
+    <path d="M 46 24 L 48 14 L 42 21 Z" fill="#2a2a2a"/>
+    
+    <!-- Happy eyes (closed) -->
+    <path d="M 24 32 Q 26 34 28 32" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 36 32 Q 38 34 40 32" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round"/>
+    
+    <!-- Big smile -->
+    <path d="M 24 40 Q 32 46 40 40" stroke="#10b981" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    
+    <!-- Whiskers -->
+    <line x1="14" y1="36" x2="20" y2="35" stroke="#4a4a4a" stroke-width="1.5"/>
+    <line x1="14" y1="38" x2="20" y2="38" stroke="#4a4a4a" stroke-width="1.5"/>
+    <line x1="14" y1="40" x2="20" y2="41" stroke="#4a4a4a" stroke-width="1.5"/>
+    
+    <line x1="50" y1="36" x2="44" y2="35" stroke="#4a4a4a" stroke-width="1.5"/>
+    <line x1="50" y1="38" x2="44" y2="38" stroke="#4a4a4a" stroke-width="1.5"/>
+    <line x1="50" y1="40" x2="44" y2="41" stroke="#4a4a4a" stroke-width="1.5"/>
+    
+    <!-- Nose -->
+    <ellipse cx="32" cy="38" rx="2" ry="1.5" fill="#ff69b4"/>
+  </g>
+</svg>

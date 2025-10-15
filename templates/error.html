@@ -1,8 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text-center">
-  <h1>Error {{ error_code }}</h1>
-  <p>{{ error_message }}</p>
-  <a href="{{ url_for('index') }}" class="btn btn-primary">Back Home</a>
+<div style="text-align: center; padding: 3rem 1rem;">
+  <img src="{{ url_for('static', filename='img/cat-sad.svg') }}" alt="Error" style="width: 120px; height: 120px; margin-bottom: 1.5rem; opacity: 0.7;">
+  
+  <h1 style="font-size: 4rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--danger-color), var(--warning-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+    Error {{ error_code }}
+  </h1>
+  
+  <p style="font-size: 1.3rem; color: var(--text-secondary); margin-bottom: 2rem;">
+    {{ error_message }}
+  </p>
+  
+  <a href="{{ url_for('index') }}" class="btn btn-primary">
+    ← Back to Home
+  </a>
 </div>
 {% endblock %}
