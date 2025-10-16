@@ -67,11 +67,75 @@
           <td>${{ "{:.2f}".format(p.price_per_sqft) }}</td>
           <td>{{ p.bedrooms }} / {{ p.bathrooms }}</td>
           <td>
-            <div class="kobi-score-container">
+            <div class="kobi-score-container kobi-score-tooltip"
+                 data-score="{{ score }}"
+                 data-price-sqft="{{ p.price_per_sqft or 0 }}"
+                 data-days-market="{{ p.days_on_market or 0 }}"
+                 data-starbucks="{{ p.nearest_starbucks_distance or 0 }}"
+                 data-heb="{{ p.nearest_heb_distance or 0 }}"
+                 data-target="{{ p.nearest_target_distance or 0 }}"
+                 data-year-built="{{ p.year_built or 2000 }}">
               <img src="{{ url_for('static', filename='img/' + cat_icon) }}" alt="Kobi" class="kobi-cat-icon">
               <span class="kobi-score-badge {{ score_class }}">{{ "{:.0f}".format(score) }}</span>
+              <div class="tooltip-content">
+                <div class="tooltip-header">
+                  <img src="{{ url_for('static', filename='img/' + cat_icon) }}" alt="Kobi" style="width: 20px; height: 20px;">
+                  Kobi Score Breakdown
+                </div>
+                <div class="tooltip-row">
+                  <span class="tooltip-label">Base Score:</span>
+                  <span class="tooltip-value">+50</span>
+                </div>
+                <div class="tooltip-row">
+                  <span class="tooltip-label">💵 Price/SqFt (${{ "{:.0f}".format(p.price_per_sqft or 0) }}):</span>
+                  <span class="tooltip-value {% if p.price_per_sqft and p.price_per_sqft < 100 %}positive{% elif p.price_per_sqft and p.price_per_sqft < 150 %}{% elif p.price_per_sqft and p.price_per_sqft > 200 %}negative{% endif %}">
+                    {% if p.price_per_sqft and p.price_per_sqft < 100 %}+20{% elif p.price_per_sqft and p.price_per_sqft < 150 %}+10{% elif p.price_per_sqft and p.price_per_sqft > 200 %}-10{% else %}0{% endif %}
+                  </span>
+                </div>
+                <div class="tooltip-row">
+                  <span class="tooltip-label">📅 Days on Market ({{ p.days_on_market or 0 }}):</span>
+                  <span class="tooltip-value {% if p.days_on_market and p.days_on_market < 30 %}positive{% elif p.days_on_market and p.days_on_market > 120 %}negative{% endif %}">
+                    {% if p.days_on_market and p.days_on_market < 30 %}+15{% elif p.days_on_market and p.days_on_market < 60 %}+5{% elif p.days_on_market and p.days_on_market > 120 %}-15{% else %}0{% endif %}
+                  </span>
+                </div>
+                <div class="tooltip-row">
+                  <span class="tooltip-label">☕ Starbucks ({{ "{:.1f}".format(p.nearest_starbucks_distance or 0) }}mi):</span>
+                  <span class="tooltip-value {% if p.nearest_starbucks_distance and p.nearest_starbucks_distance < 2 %}positive{% endif %}">
+                    {% if p.nearest_starbucks_distance and p.nearest_starbucks_distance < 2 %}+5{% else %}0{% endif %}
+                  </span>
+                </div>
+                <div class="tooltip-row">
+                  <span class="tooltip-label">🛒 Grocery ({{ "{:.1f}".format(p.nearest_heb_distance or 0) }}mi):</span>
+                  <span class="tooltip-value {% if p.nearest_heb_distance and p.nearest_heb_distance < 3 %}positive{% endif %}">
+                    {% if p.nearest_heb_distance and p.nearest_heb_distance < 3 %}+10{% else %}0{% endif %}
+                  </span>
+                </div>
+                <div class="tooltip-row">
+                  <span class="tooltip-label">🎯 Target ({{ "{:.1f}".format(p.nearest_target_distance or 0) }}mi):</span>
+                  <span class="tooltip-value {% if p.nearest_target_distance and p.nearest_target_distance < 5 %}positive{% endif %}">
+                    {% if p.nearest_target_distance and p.nearest_target_distance < 5 %}+5{% else %}0{% endif %}
+                  </span>
+                </div>
+                <div class="tooltip-row">
+                  <span class="tooltip-label">🏠 Property Age ({{ (2024 - p.year_built) if p.year_built else 0 }} yrs):</span>
+                  <span class="tooltip-value {% if p.year_built and (2024 - p.year_built) < 10 %}positive{% elif p.year_built and (2024 - p.year_built) < 20 %}positive{% elif p.year_built and (2024 - p.year_built) > 50 %}negative{% endif %}">
+                    {% if p.year_built %}
+                      {% set age = 2024 - p.year_built %}
+                      {% if age < 10 %}+10{% elif age < 20 %}+5{% elif age > 50 %}-5{% else %}0{% endif %}
+                    {% else %}
+                      0
+                    {% endif %}
+                  </span>
+                </div>
+                <div class="tooltip-row tooltip-total">
+                  <span class="tooltip-label">Total Score:</span>
+                  <span class="tooltip-value">{{ "{:.0f}".format(score) }}/100</span>
+                </div>
+              </div>
             </div>
           </td>
+          </td>
+
           <td>
             <a href="{{ url_for('property_detail', property_id=p.id) }}" class="btn btn-sm btn-primary">
               View Details

@@ -1,0 +1,86 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+      @keyframes wiggle {
+        0%, 100% { transform: rotate(-5deg); }
+        50% { transform: rotate(5deg); }
+      }
+      .cat-body { animation: spin 2s linear infinite; transform-origin: center; }
+      .cat-tail { animation: wiggle 0.5s ease-in-out infinite; transform-origin: top; }
+      .paw { animation: bounce 0.6s ease-in-out infinite; }
+      .paw-1 { animation-delay: 0s; }
+      .paw-2 { animation-delay: 0.15s; }
+      .paw-3 { animation-delay: 0.3s; }
+      .paw-4 { animation-delay: 0.45s; }
+    </style>
+  </defs>
+  
+  <g class="cat-body" transform="translate(100, 100)">
+    <!-- Cat body -->
+    <ellipse cx="0" cy="0" rx="35" ry="40" fill="#1a1a1a"/>
+    
+    <!-- Cat head -->
+    <circle cx="0" cy="-35" r="28" fill="#1a1a1a"/>
+    
+    <!-- Left ear -->
+    <path d="M -20,-50 L -25,-68 L -10,-55 Z" fill="#1a1a1a"/>
+    <!-- Right ear -->
+    <path d="M 20,-50 L 25,-68 L 10,-55 Z" fill="#1a1a1a"/>
+    
+    <!-- Inner ears -->
+    <path d="M -20,-50 L -22,-60 L -15,-52 Z" fill="#ff69b4"/>
+    <path d="M 20,-50 L 22,-60 L 15,-52 Z" fill="#ff69b4"/>
+    
+    <!-- Eyes -->
+    <circle cx="-10" cy="-38" r="4" fill="#ffeb3b"/>
+    <circle cx="10" cy="-38" r="4" fill="#ffeb3b"/>
+    <circle cx="-10" cy="-38" r="2" fill="#000"/>
+    <circle cx="10" cy="-38" r="2" fill="#000"/>
+    
+    <!-- Nose -->
+    <path d="M 0,-28 L -3,-25 L 3,-25 Z" fill="#ff69b4"/>
+    
+    <!-- Mouth -->
+    <path d="M 0,-25 Q -5,-22 -8,-20" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M 0,-25 Q 5,-22 8,-20" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    
+    <!-- Whiskers -->
+    <line x1="-15" y1="-32" x2="-35" y2="-35" stroke="#333" stroke-width="1"/>
+    <line x1="-15" y1="-28" x2="-35" y2="-28" stroke="#333" stroke-width="1"/>
+    <line x1="15" y1="-32" x2="35" y2="-35" stroke="#333" stroke-width="1"/>
+    <line x1="15" y1="-28" x2="35" y2="-28" stroke="#333" stroke-width="1"/>
+    
+    <!-- Tail (curved and animated) -->
+    <g class="cat-tail" transform="translate(25, 15)">
+      <path d="M 0,0 Q 15,10 20,25 Q 22,35 18,42" stroke="#1a1a1a" stroke-width="8" fill="none" stroke-linecap="round"/>
+    </g>
+    
+    <!-- Paws -->
+    <ellipse class="paw paw-1" cx="-18" cy="35" rx="8" ry="6" fill="#1a1a1a"/>
+    <ellipse class="paw paw-2" cx="18" cy="35" rx="8" ry="6" fill="#1a1a1a"/>
+    <ellipse class="paw paw-3" cx="-10" cy="38" rx="6" ry="5" fill="#1a1a1a"/>
+    <ellipse class="paw paw-4" cx="10" cy="38" rx="6" ry="5" fill="#1a1a1a"/>
+  </g>
+  
+  <!-- Spinning dots around the cat -->
+  <circle cx="100" cy="20" r="4" fill="#3b82f6" opacity="0.8">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="180" cy="100" r="4" fill="#8b5cf6" opacity="0.8">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" begin="0.25s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="180" r="4" fill="#ec4899" opacity="0.8">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" begin="0.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="20" cy="100" r="4" fill="#10b981" opacity="0.8">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" begin="0.75s" repeatCount="indefinite"/>
+  </circle>
+</svg>

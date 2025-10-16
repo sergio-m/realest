@@ -26,8 +26,14 @@ class RealEstateDataCollector:
         self.zillow_host = Config.ZILLOW_API_HOST
         self.geolocator = Nominatim(user_agent="realestate_analyzer")
         
+        # Log API key status
+        if self.google_api_key:
+            logger.info(f"Google Places API key loaded: {self.google_api_key[:10]}...")
+        else:
+            logger.warning("Google Places API key not configured - will use sample distances")
+        
         # Zillow API configuration
-        self.zillow_base_url = "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch"
+
         self.zillow_headers = {
             "X-RapidAPI-Key": self.zillow_api_key,
             "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com"

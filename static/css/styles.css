@@ -533,3 +533,92 @@ main.container {
     opacity: 1;
   }
 }
+
+/* Kobi Score Tooltip */
+.kobi-score-tooltip {
+  position: relative;
+  cursor: help;
+}
+
+.kobi-score-tooltip .tooltip-content {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: linear-gradient(135deg, #1f2937, #111827);
+  color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  width: 280px;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.kobi-score-tooltip .tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -8px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: #1f2937 transparent transparent transparent;
+}
+
+.kobi-score-tooltip:hover .tooltip-content {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltip-header {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+}
+
+.tooltip-label {
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tooltip-value {
+  font-weight: 600;
+  color: white;
+}
+
+.tooltip-value.positive {
+  color: var(--success-color);
+}
+
+.tooltip-value.negative {
+  color: var(--danger-color);
+}
+
+.tooltip-total {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 700;
+  font-size: 1rem;
+}

@@ -1,5 +1,86 @@
 // Real Estate Analyzer - Interactive JavaScript
 
+// Create loading overlay
+function createLoadingOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'loading-overlay';
+    overlay.innerHTML = `
+        <div style="text-align: center;">
+            <img src="/static/img/cat-loading.svg" alt="Loading..." style="width: 200px; height: 200px; margin-bottom: 1rem;">
+            <h3 style="color: white; font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 700;">
+                Kobi is Fetching Properties...
+            </h3>
+            <p style="color: rgba(255, 255, 255, 0.8); font-size: 1rem;">
+                This might take a moment. Hang tight! 🐱
+            </p>
+            <div style="margin-top: 1.5rem;">
+                <div class="loading-dots">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    
+    // Add styles dynamically
+    const style = document.createElement('style');
+    style.textContent = `
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(139, 92, 246, 0.95));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+        
+        .loading-dots {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .loading-dots span {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            animation: bounce-dot 1.4s infinite ease-in-out both;
+        }
+        
+        .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        
+        .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        
+        @keyframes bounce-dot {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+function removeLoadingOverlay() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 300);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Auto-dismiss alerts after 5 seconds
     const alerts = document.querySelectorAll('.alert');
@@ -16,24 +97,29 @@ document.addEventListener('DOMContentLoaded', function() {
     closeButtons.forEach(button => {
         button.addEventListener('click', function() {
             const alert = this.closest('.alert');
-            alert.style.opacity = '0';
-            alert.style.transform = 'translateY(-20px)';
-            setTimeout(() => alert.remove(), 300);
-        });
-    });
-
-    // Add loading state to search button
-    const searchForm = document.querySelector('form[action*="search_properties"]');
+    // Add loading state to search button and show loading overlay
+    const searchForm = document.querySelector('form[method="POST"]');
     if (searchForm) {
         searchForm.addEventListener('submit', function(e) {
-            const submitButton = this.querySelector('button[type="submit"]');
-            if (submitButton) {
-                submitButton.disabled = true;
-                submitButton.innerHTML = '<span class="loading"></span> Searching...';
+            const zipCodeInput = this.querySelector('input[name="zip_code"]');
+            if (zipCodeInput && zipCodeInput.value.length === 5) {
+                // Show loading overlay immediately
+                createLoadingOverlay();
+                
+                // Update button text
+                const submitButton = this.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    const buttonText = submitButton.querySelector('span');
+                    if (buttonText) {
+                        buttonText.textContent = 'Searching...';
+                    }
+                }
             }
         });
     }
 
+            }
     // Animate stat cards on scroll
     const observerOptions = {
         threshold: 0.1,
@@ -49,23 +135,48 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, observerOptions);
 
+    // Only animate cards that are below the fold
     const statCards = document.querySelectorAll('.stat-card, .card');
-    statCards.forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        observer.observe(card);
+    statCards.forEach((card, index) => {
+        const cardTop = card.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+        
+        // Only animate cards that are below the viewport on initial load
+        if (cardTop > windowHeight) {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        } else {
+            // Cards already visible should fade in immediately
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 50); // Stagger the animation
+        }
     });
 
-    // Add hover effect to table rows
+    // Ensure table rows are visible
     const tableRows = document.querySelectorAll('.table tbody tr');
-    tableRows.forEach(row => {
+    tableRows.forEach((row, index) => {
+        row.style.opacity = '0';
+        row.style.transform = 'translateY(10px)';
+        row.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        
+        setTimeout(() => {
+            row.style.opacity = '1';
+            row.style.transform = 'translateY(0)';
+        }, index * 30); // Stagger table row animations
+        
         row.addEventListener('mouseenter', function() {
-            this.style.transform = 'scale(1.01)';
+            this.style.transform = 'translateY(0) scale(1.01)';
             this.style.transition = 'transform 0.2s ease';
         });
         row.addEventListener('mouseleave', function() {
-            this.style.transform = 'scale(1)';
+            this.style.transform = 'translateY(0) scale(1)';
         });
     });
 
@@ -80,6 +191,9 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.transform = 'scale(1) rotate(0deg)';
         });
     });
+
+    // Animate cat icons
+    const catIcons = document.querySelectorAll('.kobi-cat-icon');
 
     // Animate cat icons
     const catIcons = document.querySelectorAll('.kobi-cat-icon');
