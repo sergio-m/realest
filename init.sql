@@ -21,6 +21,10 @@ CREATE TABLE IF NOT EXISTS properties (
     nearest_heb_distance DECIMAL(8,2),
     nearest_target_distance DECIMAL(8,2),
     investment_score DECIMAL(5,2),
+    price_score DECIMAL(5,2) DEFAULT 0,
+    location_score DECIMAL(5,2) DEFAULT 0,
+    market_trend_score DECIMAL(5,2) DEFAULT 0,
+    amenity_score DECIMAL(5,2) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

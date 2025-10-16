@@ -31,5 +31,5 @@ EXPOSE 5005
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:5005/ || exit 1
 
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:5005", "--workers", "4", "app:create_app()"]
+# Run the application with increased timeout for API calls
+CMD ["gunicorn", "--bind", "0.0.0.0:5005", "--workers", "4", "--timeout", "180", "app:create_app()"]

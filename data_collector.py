@@ -319,54 +319,107 @@ class RealEstateDataCollector:
     
     def calculate_investment_score(self, property_data):
         """Calculate investment score based on various factors."""
-        score = 50  # Base score
-        
-        # Price per square foot factor (lower is better)
+        # Initialize component scores
+        price_score = 0
+        location_score = 0
+        market_trend_score = 0
+        amenity_score = 0
+
+        # Price per square foot factor (lower is better) - Max 25 points
         price_per_sqft = property_data.get('price_per_sqft', 0)
         if price_per_sqft > 0:
             if price_per_sqft < 100:
-                score += 20
+                price_score = 25
             elif price_per_sqft < 150:
-                score += 10
-            elif price_per_sqft > 200:
-                score -= 10
-        
-        # Days on market factor (fewer days is better)
+                price_score = 20
+            elif price_per_sqft < 200:
+                price_score = 15
+            elif price_per_sqft < 250:
+                price_score = 10
+            else:
+                price_score = 5
+
+        # Days on market factor (fewer days is better) - Max 25 points
         days_on_market = property_data.get('days_on_market', 0)
         if days_on_market > 0:
             if days_on_market < 30:
-                score += 15
+                market_trend_score = 25
             elif days_on_market < 60:
-                score += 5
-            elif days_on_market > 120:
-                score -= 15
-        
-        # Nearby amenities factor
+                market_trend_score = 20
+            elif days_on_market < 90:
+                market_trend_score = 15
+            elif days_on_market < 120:
+                market_trend_score = 10
+            else:
+                market_trend_score = 5
+
+        # Nearby amenities factor - Max 25 points
         starbucks_distance = property_data.get('nearest_starbucks_distance')
-        if starbucks_distance and starbucks_distance < 2:
-            score += 5
-        
+        if starbucks_distance is not None:
+            if starbucks_distance < 1:
+                amenity_score += 10
+            elif starbucks_distance < 2:
+                amenity_score += 7
+            elif starbucks_distance < 3:
+                amenity_score += 5
+            elif starbucks_distance < 5:
+                amenity_score += 3
+
         heb_distance = property_data.get('nearest_heb_distance')
-        if heb_distance and heb_distance < 3:
-            score += 10
-        
+        if heb_distance is not None:
+            if heb_distance < 2:
+                amenity_score += 10
+            elif heb_distance < 3:
+                amenity_score += 7
+            elif heb_distance < 5:
+                amenity_score += 5
+            elif heb_distance < 7:
+                amenity_score += 3
+
         target_distance = property_data.get('nearest_target_distance')
-        if target_distance and target_distance < 5:
-            score += 5
-        
-        # Property age factor
+        if target_distance is not None:
+            if target_distance < 3:
+                amenity_score += 5
+            elif target_distance < 5:
+                amenity_score += 3
+            elif target_distance < 7:
+                amenity_score += 2
+
+        # Cap amenity score at 25
+        amenity_score = min(25, amenity_score)
+
+        # Property age factor (location score based on property condition) - Max 25 points
         year_built = property_data.get('year_built')
         if year_built:
             current_year = 2024
             age = current_year - year_built
-            if age < 10:
-                score += 10
+            if age < 5:
+                location_score = 25  # Brand new
+            elif age < 10:
+                location_score = 22
             elif age < 20:
-                score += 5
-            elif age > 50:
-                score -= 5
-        
-        return max(0, min(100, score))  # Ensure score is between 0 and 100
+                location_score = 18
+            elif age < 30:
+                location_score = 15
+            elif age < 40:
+                location_score = 12
+            elif age < 50:
+                location_score = 10
+            else:
+                location_score = 5
+        else:
+            location_score = 15  # Default if year not available
+
+        # Calculate total score
+        total_score = price_score + location_score + market_trend_score + amenity_score
+
+        # Store component scores in property_data
+        property_data['price_score'] = price_score
+        property_data['location_score'] = location_score
+        property_data['market_trend_score'] = market_trend_score
+        property_data['amenity_score'] = amenity_score
+
+        return max(0, min(100, total_score))  # Ensure score is between 0 and 100
     
     def generate_sample_properties(self, zip_code, count=20):
         """Generate sample property data for demonstration purposes."""

@@ -376,3 +376,37 @@ realest/
 
 ## License
 MIT
+
+
+### Score Breakdown:
+
+Price Score (0-25 points): Lower price per sqft = higher score
+
+< $100/sqft: 25 points
+$100-150/sqft: 20 points
+$150-200/sqft: 15 points
+$200-250/sqft: 10 points
+$250/sqft: 5 points
+
+Market Trend Score (0-25 points): Fewer days on market = higher score
+
+< 30 days: 25 points
+30-60 days: 20 points
+60-90 days: 15 points
+90-120 days: 10 points
+120 days: 5 points
+
+Amenity Score (0-25 points): Closer to amenities = higher score
+
+Starbucks: up to 10 points
+HEB: up to 10 points
+Target: up to 5 points
+Location Score (0-25 points): Newer properties = higher score
+
+< 5 years old: 25 points
+5-10 years: 22 points
+10-20 years: 18 points
+20-30 years: 15 points
+30-40 years: 12 points
+40-50 years: 10 points
+50 years: 5 points

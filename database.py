@@ -64,7 +64,8 @@ class DatabaseManager:
                     price_per_sqft, days_on_market, latitude, longitude,
                     property_type, year_built, lot_size, hoa_fees, property_tax,
                     nearest_starbucks_distance, nearest_heb_distance,
-                    nearest_target_distance, investment_score
+                    nearest_target_distance, investment_score,
+                    price_score, location_score, market_trend_score, amenity_score
                 ) VALUES (
                     %(address)s, %(zip_code)s, %(price)s, %(square_feet)s,
                     %(bedrooms)s, %(bathrooms)s, %(price_per_sqft)s,
@@ -72,7 +73,8 @@ class DatabaseManager:
                     %(property_type)s, %(year_built)s, %(lot_size)s,
                     %(hoa_fees)s, %(property_tax)s, %(nearest_starbucks_distance)s,
                     %(nearest_heb_distance)s, %(nearest_target_distance)s,
-                    %(investment_score)s
+                    %(investment_score)s, %(price_score)s, %(location_score)s,
+                    %(market_trend_score)s, %(amenity_score)s
                 ) RETURNING id;
             """
             cur.execute(query, data)
