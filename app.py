@@ -43,9 +43,12 @@ def create_app(config_name='default'):
         """Home page with search form."""
         return render_template('index.html')
     
-    @app.route('/search', methods=['POST'])
+    @app.route('/search', methods=['GET', 'POST'])
     def search_properties():
         """Search for properties by zip code."""
+        # Redirect GET requests to home page
+        if request.method == 'GET':
+            return redirect(url_for('index'))
         zip_code = request.form.get('zip_code', '').strip()
         force_refresh = request.form.get('force_refresh', False)  # Optional checkbox
         
