@@ -5,9 +5,9 @@ services:
     image: docker.io/library/postgres:17-alpine
     container_name: realestate_db
     environment:
-      POSTGRES_DB: realestate
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: rulez
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data:Z
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:Z
@@ -19,11 +19,15 @@ services:
   web:
     build: .
     container_name: realestate_web
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: postgresql://postgres:rulez@postgres:5432/realestate
-      SECRET_KEY: your-super-secret-key-change-in-production
-      DEBUG: "False"
-      GOOGLE_PLACES_API_KEY: $REDACTED_GOOGLE_API_KEY
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${FLASK_DEBUG}
+      GOOGLE_PLACES_API_KEY: ${GOOGLE_PLACES_API_KEY}
+      ZILLOW_API_KEY: ${ZILLOW_API_KEY}
+      ZILLOW_API_HOST: ${ZILLOW_API_HOST}
     ports:
       - "5005:5005"
     depends_on:

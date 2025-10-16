@@ -12,18 +12,50 @@
   </div>
 </div>
 
-<div class="stats-grid">
+<!-- Price Filter Section -->
+<div class="card mb-4">
+  <div class="card-body" style="padding: 1.25rem;">
+    <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 200px;">
+        <label for="minPrice" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+          💵 Min Price
+        </label>
+        <input type="number" id="minPrice" class="form-control" placeholder="$0" min="0" step="10000" style="font-size: 1rem;">
+      </div>
+      <div style="flex: 1; min-width: 200px;">
+        <label for="maxPrice" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+          💰 Max Price
+        </label>
+        <input type="number" id="maxPrice" class="form-control" placeholder="No limit" min="0" step="10000" style="font-size: 1rem;">
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: flex-end;">
+        <button id="applyFilter" class="btn btn-primary" style="white-space: nowrap;">
+          Apply Filter
+        </button>
+        <button id="clearFilter" class="btn btn-secondary" style="white-space: nowrap;">
+          Clear
+        </button>
+      </div>
+    </div>
+    <div id="filterStatus" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary); display: none;">
+      <span id="filterStatusText"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Market Statistics -->
+<div class="stats-grid" id="marketStats">
   <div class="stat-card">
     <h5>Average Price</h5>
-    <div class="stat-value">${{ "{:,.0f}".format(market_stats.avg_price) }}</div>
+    <div class="stat-value" id="avgPrice">${{ "{:,.0f}".format(market_stats.avg_price) }}</div>
   </div>
   <div class="stat-card">
     <h5>Avg Price/SqFt</h5>
-    <div class="stat-value">${{ "{:.2f}".format(market_stats.avg_price_per_sqft) }}</div>
+    <div class="stat-value" id="avgPriceSqft">${{ "{:.2f}".format(market_stats.avg_price_per_sqft) }}</div>
   </div>
   <div class="stat-card">
     <h5>Avg Days on Market</h5>
-    <div class="stat-value">{{ "{:.0f}".format(market_stats.avg_days_on_market) }}</div>
+    <div class="stat-value" id="avgDaysMarket">{{ "{:.0f}".format(market_stats.avg_days_on_market) }}</div>
   </div>
 </div>
 
@@ -60,80 +92,50 @@
           {% set cat_icon = 'cat-sad.svg' %}
           {% set score_class = 'kobi-score-poor' %}
         {% endif %}
-        <tr>
+        <tr class="property-row"
+            data-price="{{ p.price }}"
+            data-price-sqft="{{ p.price_per_sqft }}"
+            data-days-market="{{ p.days_on_market }}">
           <td style="font-weight: 500;">{{ p.address }}</td>
           <td style="font-weight: 600; color: var(--primary-color);">${{ "{:,.0f}".format(p.price) }}</td>
           <td>{{ "{:,}".format(p.square_feet) }}</td>
           <td>${{ "{:.2f}".format(p.price_per_sqft) }}</td>
           <td>{{ p.bedrooms }} / {{ p.bathrooms }}</td>
+
           <td>
-            <div class="kobi-score-container kobi-score-tooltip"
-                 data-score="{{ score }}"
-                 data-price-sqft="{{ p.price_per_sqft or 0 }}"
-                 data-days-market="{{ p.days_on_market or 0 }}"
-                 data-starbucks="{{ p.nearest_starbucks_distance or 0 }}"
-                 data-heb="{{ p.nearest_heb_distance or 0 }}"
-                 data-target="{{ p.nearest_target_distance or 0 }}"
-                 data-year-built="{{ p.year_built or 2000 }}">
-              <img src="{{ url_for('static', filename='img/' + cat_icon) }}" alt="Kobi" class="kobi-cat-icon">
-              <span class="kobi-score-badge {{ score_class }}">{{ "{:.0f}".format(score) }}</span>
+            <div class="kobi-score-tooltip">
+              <div class="{{ score_class }}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600;">
+                <img src="/static/img/{{ cat_icon }}" alt="Kobi" style="width: 24px; height: 24px;">
+                <span>{{ "{:.0f}".format(score) }}</span>
+              </div>
               <div class="tooltip-content">
-                <div class="tooltip-header">
-                  <img src="{{ url_for('static', filename='img/' + cat_icon) }}" alt="Kobi" style="width: 20px; height: 20px;">
+                <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.75rem; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 0.5rem;">
                   Kobi Score Breakdown
                 </div>
-                <div class="tooltip-row">
-                  <span class="tooltip-label">Base Score:</span>
-                  <span class="tooltip-value">+50</span>
-                </div>
-                <div class="tooltip-row">
-                  <span class="tooltip-label">💵 Price/SqFt (${{ "{:.0f}".format(p.price_per_sqft or 0) }}):</span>
-                  <span class="tooltip-value {% if p.price_per_sqft and p.price_per_sqft < 100 %}positive{% elif p.price_per_sqft and p.price_per_sqft < 150 %}{% elif p.price_per_sqft and p.price_per_sqft > 200 %}negative{% endif %}">
-                    {% if p.price_per_sqft and p.price_per_sqft < 100 %}+20{% elif p.price_per_sqft and p.price_per_sqft < 150 %}+10{% elif p.price_per_sqft and p.price_per_sqft > 200 %}-10{% else %}0{% endif %}
-                  </span>
-                </div>
-                <div class="tooltip-row">
-                  <span class="tooltip-label">📅 Days on Market ({{ p.days_on_market or 0 }}):</span>
-                  <span class="tooltip-value {% if p.days_on_market and p.days_on_market < 30 %}positive{% elif p.days_on_market and p.days_on_market > 120 %}negative{% endif %}">
-                    {% if p.days_on_market and p.days_on_market < 30 %}+15{% elif p.days_on_market and p.days_on_market < 60 %}+5{% elif p.days_on_market and p.days_on_market > 120 %}-15{% else %}0{% endif %}
-                  </span>
-                </div>
-                <div class="tooltip-row">
-                  <span class="tooltip-label">☕ Starbucks ({{ "{:.1f}".format(p.nearest_starbucks_distance or 0) }}mi):</span>
-                  <span class="tooltip-value {% if p.nearest_starbucks_distance and p.nearest_starbucks_distance < 2 %}positive{% endif %}">
-                    {% if p.nearest_starbucks_distance and p.nearest_starbucks_distance < 2 %}+5{% else %}0{% endif %}
-                  </span>
-                </div>
-                <div class="tooltip-row">
-                  <span class="tooltip-label">🛒 Grocery ({{ "{:.1f}".format(p.nearest_heb_distance or 0) }}mi):</span>
-                  <span class="tooltip-value {% if p.nearest_heb_distance and p.nearest_heb_distance < 3 %}positive{% endif %}">
-                    {% if p.nearest_heb_distance and p.nearest_heb_distance < 3 %}+10{% else %}0{% endif %}
-                  </span>
-                </div>
-                <div class="tooltip-row">
-                  <span class="tooltip-label">🎯 Target ({{ "{:.1f}".format(p.nearest_target_distance or 0) }}mi):</span>
-                  <span class="tooltip-value {% if p.nearest_target_distance and p.nearest_target_distance < 5 %}positive{% endif %}">
-                    {% if p.nearest_target_distance and p.nearest_target_distance < 5 %}+5{% else %}0{% endif %}
-                  </span>
-                </div>
-                <div class="tooltip-row">
-                  <span class="tooltip-label">🏠 Property Age ({{ (2024 - p.year_built) if p.year_built else 0 }} yrs):</span>
-                  <span class="tooltip-value {% if p.year_built and (2024 - p.year_built) < 10 %}positive{% elif p.year_built and (2024 - p.year_built) < 20 %}positive{% elif p.year_built and (2024 - p.year_built) > 50 %}negative{% endif %}">
-                    {% if p.year_built %}
-                      {% set age = 2024 - p.year_built %}
-                      {% if age < 10 %}+10{% elif age < 20 %}+5{% elif age > 50 %}-5{% else %}0{% endif %}
-                    {% else %}
-                      0
-                    {% endif %}
-                  </span>
-                </div>
-                <div class="tooltip-row tooltip-total">
-                  <span class="tooltip-label">Total Score:</span>
-                  <span class="tooltip-value">{{ "{:.0f}".format(score) }}/100</span>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                  <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+                    <span style="color: rgba(255, 255, 255, 0.8);">Price Value:</span>
+                    <span style="font-weight: 600;">{{ "{:.1f}".format(p.price_score or 0) }}</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+                    <span style="color: rgba(255, 255, 255, 0.8);">Location:</span>
+                    <span style="font-weight: 600;">{{ "{:.1f}".format(p.location_score or 0) }}</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+                    <span style="color: rgba(255, 255, 255, 0.8);">Market Trend:</span>
+                    <span style="font-weight: 600;">{{ "{:.1f}".format(p.market_trend_score or 0) }}</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+                    <span style="color: rgba(255, 255, 255, 0.8);">Amenities:</span>
+                    <span style="font-weight: 600;">{{ "{:.1f}".format(p.amenity_score or 0) }}</span>
+                  </div>
+                  <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.2); display: flex; justify-content: space-between; font-weight: 700;">
+                    <span>Total Score:</span>
+                    <span style="color: #10b981;">{{ "{:.0f}".format(score) }}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </td>
           </td>
 
           <td>
@@ -142,7 +144,117 @@
             </a>
           </td>
         </tr>
-      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// Price filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const minPriceInput = document.getElementById('minPrice');
+    const maxPriceInput = document.getElementById('maxPrice');
+    const applyFilterBtn = document.getElementById('applyFilter');
+    const clearFilterBtn = document.getElementById('clearFilter');
+    const filterStatus = document.getElementById('filterStatus');
+    const filterStatusText = document.getElementById('filterStatusText');
+    const propertyRows = document.querySelectorAll('.property-row');
+
+    function applyPriceFilter() {
+        const minPrice = parseFloat(minPriceInput.value) || 0;
+        const maxPrice = parseFloat(maxPriceInput.value) || Infinity;
+
+        let visibleCount = 0;
+        let totalPrice = 0;
+        let totalPriceSqft = 0;
+        let totalDaysMarket = 0;
+
+        propertyRows.forEach(row => {
+            const price = parseFloat(row.dataset.price);
+            const priceSqft = parseFloat(row.dataset.priceSqft);
+            const daysMarket = parseFloat(row.dataset.daysMarket);
+
+            if (price >= minPrice && price <= maxPrice) {
+                row.style.display = '';
+                visibleCount++;
+                totalPrice += price;
+                totalPriceSqft += priceSqft;
+                totalDaysMarket += daysMarket;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Update metrics
+        if (visibleCount > 0) {
+            const avgPrice = totalPrice / visibleCount;
+            const avgPriceSqft = totalPriceSqft / visibleCount;
+            const avgDaysMarket = totalDaysMarket / visibleCount;
+
+            document.getElementById('avgPrice').textContent = '$' + avgPrice.toLocaleString('en-US', {maximumFractionDigits: 0});
+            document.getElementById('avgPriceSqft').textContent = '$' + avgPriceSqft.toFixed(2);
+            document.getElementById('avgDaysMarket').textContent = avgDaysMarket.toFixed(0);
+
+            // Show filter status
+            filterStatus.style.display = 'block';
+            filterStatusText.textContent = `Showing ${visibleCount} of ${propertyRows.length} properties`;
+            filterStatusText.style.color = 'var(--success-color)';
+        } else {
+            filterStatus.style.display = 'block';
+            filterStatusText.textContent = 'No properties match the selected price range';
+            filterStatusText.style.color = 'var(--danger-color)';
+        }
+    }
+
+    function clearFilter() {
+        minPriceInput.value = '';
+        maxPriceInput.value = '';
+
+        // Show all rows
+        propertyRows.forEach(row => {
+            row.style.display = '';
+        });
+
+        // Reset metrics to original values
+        let totalPrice = 0;
+        let totalPriceSqft = 0;
+        let totalDaysMarket = 0;
+
+        propertyRows.forEach(row => {
+            totalPrice += parseFloat(row.dataset.price);
+            totalPriceSqft += parseFloat(row.dataset.priceSqft);
+            totalDaysMarket += parseFloat(row.dataset.daysMarket);
+        });
+
+        const count = propertyRows.length;
+        document.getElementById('avgPrice').textContent = '$' + (totalPrice / count).toLocaleString('en-US', {maximumFractionDigits: 0});
+        document.getElementById('avgPriceSqft').textContent = '$' + (totalPriceSqft / count).toFixed(2);
+        document.getElementById('avgDaysMarket').textContent = (totalDaysMarket / count).toFixed(0);
+
+        // Hide filter status
+        filterStatus.style.display = 'none';
+    }
+
+    // Event listeners
+    applyFilterBtn.addEventListener('click', applyPriceFilter);
+    clearFilterBtn.addEventListener('click', clearFilter);
+
+    // Allow Enter key to apply filter
+    minPriceInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            applyPriceFilter();
+        }
+    });
+
+    maxPriceInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            applyPriceFilter();
+        }
+    });
+});
+</script>
+
+{% endblock %}
       </tbody>
     </table>
   </div>

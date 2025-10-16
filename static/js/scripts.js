@@ -1,7 +1,13 @@
 // Real Estate Analyzer - Interactive JavaScript
 
-// Create loading overlay
+ // Create loading overlay
 function createLoadingOverlay() {
+    // Remove any existing overlay first
+    const existingOverlay = document.getElementById('loading-overlay');
+    if (existingOverlay) {
+        existingOverlay.remove();
+    }
+
     const overlay = document.createElement('div');
     overlay.id = 'loading-overlay';
     overlay.innerHTML = `
@@ -20,8 +26,7 @@ function createLoadingOverlay() {
             </div>
         </div>
     `;
-    document.body.appendChild(overlay);
-    
+
     // Add styles dynamically
     const style = document.createElement('style');
     style.textContent = `
@@ -36,47 +41,77 @@ function createLoadingOverlay() {
             justify-content: center;
             align-items: center;
             z-index: 9999;
+            opacity: 0;
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
+            transition: opacity 0.3s ease;
+            -webkit-transition: opacity 0.3s ease;
         }
-        
+
+        #loading-overlay.show {
+            opacity: 1;
+        }
+
         .loading-dots {
             display: flex;
             gap: 8px;
             justify-content: center;
         }
-        
+
         .loading-dots span {
             width: 12px;
             height: 12px;
             background: white;
             border-radius: 50%;
+            -webkit-animation: bounce-dot 1.4s infinite ease-in-out both;
             animation: bounce-dot 1.4s infinite ease-in-out both;
         }
-        
+
         .loading-dots span:nth-child(1) {
+            -webkit-animation-delay: -0.32s;
             animation-delay: -0.32s;
         }
-        
+
         .loading-dots span:nth-child(2) {
+            -webkit-animation-delay: -0.16s;
             animation-delay: -0.16s;
         }
-        
-        @keyframes bounce-dot {
+
+        @-webkit-keyframes bounce-dot {
             0%, 80%, 100% {
+                -webkit-transform: scale(0);
                 transform: scale(0);
             }
             40% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounce-dot {
+            0%, 80%, 100% {
+                -webkit-transform: scale(0);
+                transform: scale(0);
+            }
+            40% {
+                -webkit-transform: scale(1);
                 transform: scale(1);
             }
         }
     `;
     document.head.appendChild(style);
+    document.body.appendChild(overlay);
+
+    // Force reflow and add show class for transition
+    setTimeout(() => {
+        overlay.classList.add('show');
+    }, 10);
 }
 
 function removeLoadingOverlay() {
     const overlay = document.getElementById('loading-overlay');
     if (overlay) {
-        overlay.style.opacity = '0';
+        overlay.classList.remove('show');
         setTimeout(() => overlay.remove(), 300);
     }
 }
