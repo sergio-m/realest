@@ -41,9 +41,13 @@ def create_app(config_name='default'):
     @app.route('/')
     def index():
         """Home page with search form and market analytics."""
+        # Get sorting parameters from query string
+        sort_by = request.args.get('sort_by', 'avg_days_on_market')
+        order = request.args.get('order', 'asc')
+
         # Get zip code analytics
-        analytics = db_manager.get_zip_code_analytics()
-        return render_template('index.html', analytics=analytics)
+        analytics = db_manager.get_zip_code_analytics(sort_by=sort_by, order=order)
+        return render_template('index.html', analytics=analytics, sort_by=sort_by, order=order)
     
     @app.route('/search', methods=['GET', 'POST'])
     def search_properties():

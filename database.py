@@ -297,13 +297,30 @@ class DatabaseManager:
         finally:
             cur.close()
 
-    def get_zip_code_analytics(self):
+    def get_zip_code_analytics(self, sort_by='avg_days_on_market', order='asc'):
         """Get market analytics for all zip codes in the database."""
         try:
             cur = self.connection.cursor()
 
+            # Map sort columns to their database names
+            sort_columns = {
+                'avg_days_on_market': 'avg_days_on_market',
+                'avg_price': 'avg_price',
+                'avg_price_per_sqft': 'avg_price_per_sqft',
+                'avg_kobi_score': 'avg_kobi_score',
+                'avg_square_feet': 'avg_square_feet',
+                'property_count': 'property_count'
+            }
+
+            # Default to avg_days_on_market if invalid sort column
+            if sort_by not in sort_columns:
+                sort_by = 'avg_days_on_market'
+
+            # Validate order parameter
+            order = order.upper() if order.upper() in ['ASC', 'DESC'] else 'ASC'
+
             # Aggregate property-level metrics by zip code for market analysis
-            query = """
+            query = f"""
                 SELECT
                     zip_code,
                     COUNT(*) AS property_count,
@@ -320,7 +337,7 @@ class DatabaseManager:
                   AND days_on_market IS NOT NULL
                   AND square_feet IS NOT NULL
                 GROUP BY zip_code
-                ORDER BY avg_days_on_market ASC
+                ORDER BY {sort_columns[sort_by]} {order}
             """
 
             cur.execute(query)

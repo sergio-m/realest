@@ -39,15 +39,61 @@
       <thead>
         <tr>
           <th>Zip Code</th>
-          <th title="Average days properties stay on market">Avg Days on Market ↓</th>
+          <th>
+            <a href="?sort_by=avg_days_on_market&order={% if sort_by == 'avg_days_on_market' and order == 'asc' %}desc{% else %}asc{% endif %}"
+               class="text-decoration-none text-white"
+               title="Average days properties stay on market">
+              Avg Days on Market
+              {% if sort_by == 'avg_days_on_market' %}
+                {% if order == 'asc' %}↑{% else %}↓{% endif %}
+              {% endif %}
+            </a>
+          </th>
           <th title="Number of active listings">Active Listings</th>
-          <th title="Average listing price">Avg Price</th>
-          <th title="Average price per square foot">$/SqFt</th>
-          <th title="Average square footage">Avg SqFt</th>
+          <th>
+            <a href="?sort_by=avg_price&order={% if sort_by == 'avg_price' and order == 'asc' %}desc{% else %}asc{% endif %}"
+               class="text-decoration-none text-white sortable"
+               title="Average listing price">
+              Avg Price
+              {% if sort_by == 'avg_price' %}
+                {% if order == 'asc' %}↑{% else %}↓{% endif %}
+              {% endif %}
+            </a>
+          </th>
+          <th>
+            <a href="?sort_by=avg_price_per_sqft&order={% if sort_by == 'avg_price_per_sqft' and order == 'asc' %}desc{% else %}asc{% endif %}"
+               class="text-decoration-none text-white sortable"
+               title="Average price per square foot">
+              $/SqFt
+              {% if sort_by == 'avg_price_per_sqft' %}
+                {% if order == 'asc' %}↑{% else %}↓{% endif %}
+              {% endif %}
+            </a>
+          </th>
+          <th>
+            <a href="?sort_by=avg_square_feet&order={% if sort_by == 'avg_square_feet' and order == 'asc' %}desc{% else %}asc{% endif %}"
+               class="text-decoration-none text-white sortable"
+               title="Average square footage">
+              Avg SqFt
+              {% if sort_by == 'avg_square_feet' %}
+                {% if order == 'asc' %}↑{% else %}↓{% endif %}
+              {% endif %}
+            </a>
+          </th>
           <th title="Price range in market">Price Range</th>
-          <th title="Average Kobi investment score">Avg Kobi Score</th>
+          <th>
+            <a href="?sort_by=avg_kobi_score&order={% if sort_by == 'avg_kobi_score' and order == 'asc' %}desc{% else %}asc{% endif %}"
+               class="text-decoration-none text-white sortable"
+               title="Average Kobi investment score">
+              Avg Kobi Score
+              {% if sort_by == 'avg_kobi_score' %}
+                {% if order == 'asc' %}↑{% else %}↓{% endif %}
+              {% endif %}
+            </a>
+          </th>
           <th title="Last data update">Last Updated</th>
         </tr>
+      </thead>
       </thead>
       <tbody>
         {% for row in analytics %}
