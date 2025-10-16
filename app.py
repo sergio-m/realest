@@ -40,8 +40,10 @@ def create_app(config_name='default'):
     
     @app.route('/')
     def index():
-        """Home page with search form."""
-        return render_template('index.html')
+        """Home page with search form and market analytics."""
+        # Get zip code analytics
+        analytics = db_manager.get_zip_code_analytics()
+        return render_template('index.html', analytics=analytics)
     
     @app.route('/search', methods=['GET', 'POST'])
     def search_properties():

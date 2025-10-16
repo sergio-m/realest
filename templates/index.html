@@ -12,7 +12,7 @@
   </svg>
   <h2>Discover Your Perfect Investment</h2>
   <p>Search properties and get instant Kobi Score ratings powered by AI analysis</p>
-  
+
   <form method="POST" action="{{ url_for('search_properties') }}" class="mt-3">
     <div class="input-group w-50 mx-auto">
       <input type="text" class="form-control" name="zip_code" placeholder="Enter 5-digit Zip Code" required pattern="[0-9]{5}" maxlength="5">
@@ -29,6 +29,78 @@
   </form>
 </div>
 
+{% if analytics %}
+<div class="container mt-5">
+  <h3 class="mb-4">🔥 Hot Markets - Properties Moving Fast</h3>
+  <p class="text-muted mb-3">Zip codes sorted by average days on market (fastest selling first)</p>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-dark">
+      <thead>
+        <tr>
+          <th>Zip Code</th>
+          <th title="Average days properties stay on market">Avg Days on Market ↓</th>
+          <th title="Number of active listings">Active Listings</th>
+          <th title="Average listing price">Avg Price</th>
+          <th title="Average price per square foot">$/SqFt</th>
+          <th title="Average square footage">Avg SqFt</th>
+          <th title="Price range in market">Price Range</th>
+          <th title="Average Kobi investment score">Avg Kobi Score</th>
+          <th title="Last data update">Last Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in analytics %}
+        <tr class="{% if row.avg_days_on_market < 30 %}table-success{% elif row.avg_days_on_market < 60 %}table-warning{% endif %}">
+          <td>
+            <form method="POST" action="{{ url_for('search_properties') }}" style="display: inline;">
+              <input type="hidden" name="zip_code" value="{{ row.zip_code }}">
+              <button type="submit" class="btn btn-link p-0 text-decoration-none">
+                <strong>{{ row.zip_code }}</strong>
+              </button>
+            </form>
+          </td>
+          <td>
+            <span class="badge {% if row.avg_days_on_market < 30 %}bg-success{% elif row.avg_days_on_market < 60 %}bg-warning{% else %}bg-secondary{% endif %}">
+              {{ row.avg_days_on_market|int }} days
+            </span>
+          </td>
+          <td>{{ row.property_count }}</td>
+          <td>${{ "{:,.0f}".format(row.avg_price) }}</td>
+          <td>${{ "{:.0f}".format(row.avg_price_per_sqft) }}</td>
+          <td>{{ "{:,.0f}".format(row.avg_square_feet) }}</td>
+          <td>
+            <small class="text-muted">
+              ${{ "{:,.0f}".format(row.min_price) }} - ${{ "{:,.0f}".format(row.max_price) }}
+            </small>
+          </td>
+          <td>
+            <span class="badge {% if row.avg_kobi_score >= 80 %}bg-success{% elif row.avg_kobi_score >= 60 %}bg-primary{% elif row.avg_kobi_score >= 40 %}bg-warning{% else %}bg-danger{% endif %}">
+              {{ "{:.1f}".format(row.avg_kobi_score) }}
+            </span>
+          </td>
+          <td>
+            <small class="text-muted">
+              {{ row.last_updated.strftime('%m/%d %I:%M%p') }}
+            </small>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-3">
+    <small class="text-muted">
+      <strong>Market Insights:</strong>
+      <span class="badge bg-success">Green</span> = Hot market (< 30 days) |
+      <span class="badge bg-warning">Yellow</span> = Moderate (30-60 days) |
+      <span class="badge bg-secondary">Gray</span> = Slower market (> 60 days)
+    </small>
+  </div>
+</div>
+{% endif %}
+
 <div class="stats-grid mt-4">
   <div class="stat-card">
     <h5>Kobi Score</h5>
@@ -36,14 +108,14 @@
       Our proprietary AI-powered rating system that evaluates properties based on price, location, amenities, and market trends.
     </p>
   </div>
-  
+
   <div class="stat-card">
     <h5>Smart Analysis</h5>
     <p style="color: var(--text-secondary); margin-top: 0.5rem;">
       Get instant insights on property value, nearby amenities, and investment potential with our advanced algorithms.
     </p>
   </div>
-  
+
   <div class="stat-card">
     <h5>Real-Time Data</h5>
     <p style="color: var(--text-secondary); margin-top: 0.5rem;">

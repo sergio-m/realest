@@ -277,22 +277,60 @@ class DatabaseManager:
         """Get properties that were created today for a specific zip code."""
         try:
             cur = self.connection.cursor()
-            
+
             query = """
-                SELECT * FROM properties 
-                WHERE zip_code = %s 
+                SELECT * FROM properties
+                WHERE zip_code = %s
                 AND DATE(created_at) = CURRENT_DATE
                 ORDER BY investment_score DESC
             """
-            
+
             cur.execute(query, (zip_code,))
             properties = cur.fetchall()
-            
+
             logger.info(f"Found {len(properties)} properties created today for zip code {zip_code}")
             return properties
-                
+
         except Exception as e:
             logger.error(f"Error getting today's properties: {e}")
+            return []
+        finally:
+            cur.close()
+
+    def get_zip_code_analytics(self):
+        """Get market analytics for all zip codes in the database."""
+        try:
+            cur = self.connection.cursor()
+
+            # Aggregate property-level metrics by zip code for market analysis
+            query = """
+                SELECT
+                    zip_code,
+                    COUNT(*) AS property_count,
+                    ROUND(AVG(days_on_market)::numeric, 1) AS avg_days_on_market,
+                    ROUND(AVG(price)::numeric, 0) AS avg_price,
+                    ROUND(AVG(price_per_sqft)::numeric, 2) AS avg_price_per_sqft,
+                    ROUND(AVG(investment_score)::numeric, 2) AS avg_kobi_score,
+                    MIN(price) AS min_price,
+                    MAX(price) AS max_price,
+                    ROUND(AVG(square_feet)::numeric, 0) AS avg_square_feet,
+                    MAX(created_at) AS last_updated
+                FROM properties
+                WHERE price IS NOT NULL
+                  AND days_on_market IS NOT NULL
+                  AND square_feet IS NOT NULL
+                GROUP BY zip_code
+                ORDER BY avg_days_on_market ASC
+            """
+
+            cur.execute(query)
+            analytics = cur.fetchall()
+
+            logger.info(f"Retrieved analytics for {len(analytics)} zip codes")
+            return analytics
+
+        except Exception as e:
+            logger.error(f"Error getting zip code analytics: {e}")
             return []
         finally:
             cur.close()
