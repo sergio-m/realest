@@ -340,16 +340,19 @@ class RealEstateDataCollector:
                 price_score = 5
 
         # Days on market factor (fewer days is better) - Max 25 points
+        # Applied a bell curve. Good score is recent in market and many days was well
         days_on_market = property_data.get('days_on_market', 0)
         if days_on_market > 0:
             if days_on_market < 30:
                 market_trend_score = 25
             elif days_on_market < 60:
-                market_trend_score = 20
+                market_trend_score = 10
             elif days_on_market < 90:
                 market_trend_score = 15
             elif days_on_market < 120:
-                market_trend_score = 10
+                market_trend_score = 20
+            elif days_on_market < 180:
+                market_trend_score = 25
             else:
                 market_trend_score = 5
 
