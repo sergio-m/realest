@@ -177,34 +177,34 @@ class RealEstateDataCollector:
             # Handle different possible field names in Zillow response
             address = (prop.get('address') or 
                       prop.get('streetAddress') or 
-                      prop.get('full_address') or 
+                      prop.get('full_address') or
                       'Address Not Available')
-            
-            price = (prop.get('price') or 
-                    prop.get('list_price') or 
+
+            price = (prop.get('price') or
+                    prop.get('list_price') or
                     prop.get('zestimate') or 0)
-            
+
             # Convert price string to number if needed
             if isinstance(price, str):
                 price = int(''.join(filter(str.isdigit, price))) if price else 0
-            
-            square_feet = (prop.get('livingArea') or 
-                          prop.get('sqft') or 
-                          prop.get('square_feet') or 
+
+            square_feet = (prop.get('livingArea') or
+                          prop.get('sqft') or
+                          prop.get('square_feet') or
                           random.randint(800, 3000))  # fallback
-            
-            bedrooms = (prop.get('bedrooms') or 
-                       prop.get('beds') or 
+
+            bedrooms = (prop.get('bedrooms') or
+                       prop.get('beds') or
                        random.randint(1, 4))  # fallback
-            
-            bathrooms = (prop.get('bathrooms') or 
-                        prop.get('baths') or 
+
+            bathrooms = (prop.get('bathrooms') or
+                        prop.get('baths') or
                         random.choice([1, 1.5, 2, 2.5, 3]))  # fallback
-            
+
             # Get coordinates
             latitude = prop.get('latitude') or prop.get('lat')
             longitude = prop.get('longitude') or prop.get('lng') or prop.get('lon')
-            
+
             # If no coordinates, try to geocode the address
             if not latitude or not longitude:
                 try:
@@ -212,11 +212,38 @@ class RealEstateDataCollector:
                     if location:
                         latitude = location.latitude
                         longitude = location.longitude
-                except:
-                    # Use zip code center as fallback
+                except Exception:
+                    # Try using the zip code center as fallback
                     zip_lat, zip_lng = self.get_zip_code_coordinates(zip_code)
-                    latitude = zip_lat + random.uniform(-0.02, 0.02) if zip_lat else None
-                    longitude = zip_lng + random.uniform(-0.02, 0.02) if zip_lng else None
+                    if zip_lat and zip_lng:
+                        latitude = zip_lat + random.uniform(-0.02, 0.02)
+                        longitude = zip_lng + random.uniform(-0.02, 0.02)
+                    else:
+                        # Use default coordinates for some known zip codes, or generate a safe fallback
+                        zip_defaults = {
+                            '78704': (30.2672, -97.7649),
+                            '75201': (32.7767, -96.7970),
+                            '77002': (29.7604, -95.3698),
+                        }
+                        zc = str(zip_code) if zip_code is not None else ''
+                        if zc in zip_defaults:
+                            lat, lng = zip_defaults[zc]
+                            latitude = lat + random.uniform(-0.02, 0.02)
+                            longitude = lng + random.uniform(-0.02, 0.02)
+                        else:
+                            # Final fallback to approximate US center with small random variation
+                            latitude = 39.8283 + random.uniform(-0.05, 0.05)
+                            longitude = -98.5795 + random.uniform(-0.05, 0.05)
+
+            # Ensure coordinates are numeric types (not strings) and never None
+            try:
+                latitude = float(latitude)
+            except Exception:
+                latitude = 39.8283 + random.uniform(-0.05, 0.05)
+            try:
+                longitude = float(longitude)
+            except Exception:
+                longitude = -98.5795 + random.uniform(-0.05, 0.05)
             
             # Calculate price per square foot
             price_per_sqft = round(price / square_feet, 2) if square_feet > 0 else 0
@@ -492,29 +519,31 @@ class RealEstateDataCollector:
     def collect_real_estate_data(self, zip_code, use_sample_data=False, force_refresh=False):
         """
         Main method to collect real estate data for a zip code.
-        
+
         Args:
             zip_code: The zip code to search
             use_sample_data: Force use of sample data instead of API
-            force_refresh: Force API call even if data exists from today
+            force_refresh: Force API call even if cached data exists within 8 hours
         """
         logger.info(f"Starting data collection for zip code: {zip_code}")
-        
+
         # Check if we should use cached data (unless force_refresh is True)
         if not force_refresh and not use_sample_data:
-            # Check if we already have data from today
-            if db_manager.is_search_today(zip_code):
-                logger.info(f"Found existing search for {zip_code} today, using cached data")
-                
-                # Get properties from today
-                cached_properties = db_manager.get_properties_created_today(zip_code)
-                
+            # Check if we have a recent search within 8 hours
+            recent_search = db_manager.check_recent_search(zip_code, hours_threshold=8)
+
+            if recent_search:
+                logger.info(f"Found recent search for {zip_code} from {recent_search['search_date']}")
+
+                # Get properties from database
+                cached_properties = db_manager.get_properties_by_zip(zip_code)
+
                 if cached_properties:
-                    logger.info(f"Using {len(cached_properties)} cached properties from today")
+                    logger.info(f"Using {len(cached_properties)} cached properties from within 8 hours")
                     return [dict(prop) for prop in cached_properties]
                 else:
-                    logger.warning("Search exists but no properties found, will fetch new data")
-        
+                    logger.warning("Recent search exists but no properties found, will fetch new data")
+
         # Proceed with fresh data collection
         if use_sample_data or not self.zillow_api_key:
             logger.info("Using sample data")
@@ -522,7 +551,34 @@ class RealEstateDataCollector:
         else:
             logger.info("Fetching fresh data from Zillow API")
             properties = self.fetch_zillow_properties(zip_code)
-        
+
+        # Store properties to database
+        if properties and db_manager.connection:
+            logger.info(f"Storing {len(properties)} properties to database")
+            db_manager.clear_old_properties(zip_code)
+
+            property_ids = []
+            for prop in properties:
+                try:
+                    prop_id = db_manager.insert_property(prop)
+                    if prop_id:
+                        property_ids.append(prop_id)
+                except Exception as e:
+                    logger.warning(f"Failed to store property {prop.get('address')}: {e}")
+
+            logger.info(f"Successfully stored {len(property_ids)} properties to database")
+
+            # Calculate statistics for the search record
+            avg_price = sum(p.get('price', 0) for p in properties) / len(properties) if properties else 0
+            avg_price_per_sqft = sum(p.get('price_per_sqft', 0) for p in properties) / len(properties) if properties else 0
+
+            # Record this search
+            try:
+                search_id = db_manager.record_search(zip_code, len(properties), avg_price, avg_price_per_sqft)
+                logger.info(f"Search recorded with ID: {search_id}")
+            except Exception as e:
+                logger.warning(f"Failed to record search: {e}")
+
         logger.info(f"Data collection completed. Found {len(properties)} properties")
         return properties
     

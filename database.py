@@ -89,7 +89,11 @@ class DatabaseManager:
             cur.close()
 
     def get_properties_by_zip(self, zip_code):
+        cur = None
         try:
+            if not self.connection:
+                logger.warning("Database not connected")
+                return []
             cur = self.connection.cursor()
             cur.execute(
                 "SELECT * FROM properties WHERE zip_code=%s ORDER BY investment_score DESC",
@@ -100,10 +104,15 @@ class DatabaseManager:
             logger.error(f"get_properties_by_zip failed: {e}")
             return []
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     def get_property_by_id(self, pid):
+        cur = None
         try:
+            if not self.connection:
+                logger.warning("Database not connected")
+                return None
             cur = self.connection.cursor()
             cur.execute("SELECT * FROM properties WHERE id=%s", (pid,))
             return cur.fetchone()
@@ -111,10 +120,15 @@ class DatabaseManager:
             logger.error(f"get_property_by_id failed: {e}")
             return None
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     def get_market_stats(self, zip_code):
+        cur = None
         try:
+            if not self.connection:
+                logger.warning("Database not connected")
+                return {}
             cur = self.connection.cursor()
             cur.execute("""
                 SELECT COUNT(*) as total_properties,
@@ -130,32 +144,40 @@ class DatabaseManager:
             logger.error(f"get_market_stats failed: {e}")
             return {}
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     def record_search(self, zip_code, properties_found, avg_price, avg_price_per_sqft):
         """Record a search in the searches table."""
+        cur = None
         try:
+            if not self.connection:
+                logger.warning("Database not connected")
+                return None
+
             cur = self.connection.cursor()
-            
+
             insert_query = """
                 INSERT INTO searches (zip_code, properties_found, avg_price, avg_price_per_sqft)
                 VALUES (%s, %s, %s, %s)
                 RETURNING id
             """
-            
+
             cur.execute(insert_query, (zip_code, properties_found, avg_price, avg_price_per_sqft))
             search_id = cur.fetchone()['id']
             self.connection.commit()
-            
+
             logger.info(f"Search recorded with ID: {search_id}")
             return search_id
-            
+
         except Exception as e:
             logger.error(f"Error recording search: {e}")
-            self.connection.rollback()
+            if self.connection:
+                self.connection.rollback()
             return None
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     def _ensure_connection(self):
         """Ensure DB connection is alive, reconnect if needed."""
@@ -164,118 +186,146 @@ class DatabaseManager:
 
     def check_recent_search(self, zip_code, hours_threshold=24):
         """Check if there's a recent search for this zip code within the threshold."""
+        cur = None
         try:
+            if not self.connection:
+                logger.warning("Database not connected")
+                return None
+
             self._ensure_connection()
             cur = self.connection.cursor()
-            
+
             query = """
-                SELECT id, search_date, properties_found 
-                FROM searches 
-                WHERE zip_code = %s 
+                SELECT id, search_date, properties_found
+                FROM searches
+                WHERE zip_code = %s
                 AND search_date >= NOW() - INTERVAL '%s hours'
-                ORDER BY search_date DESC 
+                ORDER BY search_date DESC
                 LIMIT 1
             """
-            
+
             cur.execute(query, (zip_code, hours_threshold))
             recent_search = cur.fetchone()
-            
+
             if recent_search:
                 logger.info(f"Found recent search for {zip_code} from {recent_search['search_date']}")
                 return recent_search
             else:
                 logger.info(f"No recent search found for {zip_code} within {hours_threshold} hours")
                 return None
-                
+
         except Exception as e:
             logger.error(f"Error checking recent search: {e}")
             return None
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     def is_search_today(self, zip_code):
         """Check if there's already a search for this zip code today."""
         cur = None
         try:
+            if not self.connection:
+                logger.warning("Database not connected")
+                return False
+
             self._ensure_connection()
             cur = self.connection.cursor()
-            
+
             query = """
                 SELECT COUNT(*) as search_count
-                FROM searches 
-                WHERE zip_code = %s 
+                FROM searches
+                WHERE zip_code = %s
                 AND DATE(search_date) = CURRENT_DATE
             """
-            
+
             cur.execute(query, (zip_code,))
             result = cur.fetchone()
-            
+
             search_count = result['search_count'] if result else 0
-            
+
             if search_count > 0:
                 logger.info(f"Found {search_count} search(es) for {zip_code} today")
                 return True
             else:
                 logger.info(f"No searches found for {zip_code} today")
                 return False
-                
+
         except Exception as e:
             logger.error(f"Error checking today's searches: {e}")
             return False
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     def get_last_search_info(self, zip_code):
         """Get information about the last search for a zip code."""
+        cur = None
         try:
+            if not self.connection:
+                logger.warning("Database not connected")
+                return None
+
             cur = self.connection.cursor()
-            
+
             query = """
                 SELECT search_date, properties_found, avg_price, avg_price_per_sqft
-                FROM searches 
-                WHERE zip_code = %s 
-                ORDER BY search_date DESC 
+                FROM searches
+                WHERE zip_code = %s
+                ORDER BY search_date DESC
                 LIMIT 1
             """
-            
+
             cur.execute(query, (zip_code,))
             return cur.fetchone()
-                
+
         except Exception as e:
             logger.error(f"Error getting last search info: {e}")
             return None
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     def clear_old_properties(self, zip_code):
         """Clear old properties for a zip code before inserting new ones."""
+        cur = None
         try:
+            if not self.connection:
+                logger.warning("Database not connected")
+                return 0
+
             cur = self.connection.cursor()
-            
-            # Delete properties older than today for this zip code
+
             delete_query = """
-                DELETE FROM properties 
-                WHERE zip_code = %s 
+                DELETE FROM properties
+                WHERE zip_code = %s
                 AND DATE(created_at) < CURRENT_DATE
             """
-            
+
             cur.execute(delete_query, (zip_code,))
             deleted_count = cur.rowcount
             self.connection.commit()
-            
+
             logger.info(f"Cleared {deleted_count} old properties for zip code {zip_code}")
             return deleted_count
-            
+
         except Exception as e:
             logger.error(f"Error clearing old properties: {e}")
-            self.connection.rollback()
+            if self.connection:
+                self.connection.rollback()
             return 0
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     def get_properties_created_today(self, zip_code):
         """Get properties that were created today for a specific zip code."""
+        cur = None
         try:
+            if not self.connection:
+                logger.warning("Database not connected")
+                return []
+
             cur = self.connection.cursor()
 
             query = """
@@ -295,7 +345,8 @@ class DatabaseManager:
             logger.error(f"Error getting today's properties: {e}")
             return []
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     def get_zip_code_analytics(self, sort_by='avg_days_on_market', order='asc'):
         """Get market analytics for all zip codes in the database."""

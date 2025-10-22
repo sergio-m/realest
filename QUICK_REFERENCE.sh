@@ -1,0 +1,157 @@
+#!/bin/bash
+# Real Estate Data API - Quick Reference & Setup Script
+
+# Colors for output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}╔═══════════════════════════════════════════════════════════╗${NC}"
+echo -e "${BLUE}║   Real Estate Data API - Quick Reference Card            ║${NC}"
+echo -e "${BLUE}╚═══════════════════════════════════════════════════════════╝${NC}"
+
+echo -e "\n${GREEN}📋 FILES CREATED:${NC}"
+echo "  ✅ app.py                   - FastAPI REST server"
+echo "  ✅ mcp_server.py           - MCP protocol server"
+echo "  ✅ examples.py             - Python usage examples"
+echo "  ✅ postman_collection.json - Postman API collection"
+echo "  ✅ requirements_api.txt    - Python dependencies"
+echo ""
+echo "  📚 API_DOCUMENTATION.md    - Complete API reference"
+echo "  📚 N8N_INTEGRATION.md      - n8n setup & workflows"
+echo "  📚 SETUP_GUIDE.md          - Installation & deployment"
+echo "  📚 README.md               - Project overview"
+echo "  📚 DELIVERABLES.md         - What was created"
+
+echo -e "\n${GREEN}🚀 QUICK START (5 minutes):${NC}"
+echo -e "  ${YELLOW}1. Install dependencies:${NC}"
+echo "     pip install -r requirements_api.txt"
+echo ""
+echo -e "  ${YELLOW}2. Start API:${NC}"
+echo "     python app.py"
+echo ""
+echo -e "  ${YELLOW}3. Test it:${NC}"
+echo "     curl \"http://localhost:8000/properties?zip_code=78704&timezone=America/Chicago\""
+echo ""
+echo -e "  ${YELLOW}4. View API docs:${NC}"
+echo "     Open: http://localhost:8000/docs"
+
+echo -e "\n${GREEN}📡 API ENDPOINTS:${NC}"
+echo "  GET /health                     - Health check"
+echo "  GET /properties                 - Get properties by ZIP"
+echo "  GET /properties/{zip_code}      - Alternative endpoint"
+echo "  GET /properties/{zip_code}/top  - Top property by score"
+echo "  GET /properties/{zip_code}/filter - Filter by criteria"
+echo "  GET /properties/{zip_code}/stats  - Statistics"
+
+echo -e "\n${GREEN}🕐 TIMEZONE SUPPORT:${NC}"
+echo "  All endpoints support timezone parameter:"
+echo "  ?timezone=America/Chicago       - Central Time"
+echo "  ?timezone=America/New_York      - Eastern Time"
+echo "  ?timezone=America/Los_Angeles   - Pacific Time"
+echo "  ?timezone=Europe/London         - GMT"
+echo "  ?timezone=UTC                   - Coordinated Universal Time"
+
+echo -e "\n${GREEN}🔗 INTEGRATION:${NC}"
+echo "  📝 n8n:          HTTP Request to http://localhost:8000/properties"
+echo "  🤖 MCP Server:   python mcp_server.py"
+echo "  🐍 Python:       from data_collector import data_collector"
+echo "  📮 Postman:      Import postman_collection.json"
+
+echo -e "\n${GREEN}📊 QUERY PARAMETERS:${NC}"
+echo "  Required:"
+echo "    zip_code           - ZIP code to search (e.g., 78704)"
+echo ""
+echo "  Optional:"
+echo "    timezone           - Timezone (default: UTC)"
+echo "    use_sample         - Use sample data (true/false)"
+echo "    force_refresh      - Bypass cache (true/false)"
+echo ""
+echo "  Filtering (in /filter endpoint):"
+echo "    min_price          - Minimum price"
+echo "    max_price          - Maximum price"
+echo "    min_bedrooms       - Minimum bedrooms"
+echo "    max_bedrooms       - Maximum bedrooms"
+echo "    min_score          - Min investment score (0-100)"
+echo "    max_days_on_market - Max days on market"
+
+echo -e "\n${GREEN}🧪 TESTING:${NC}"
+echo "  bash # Run Python examples"
+echo "     python examples.py"
+echo ""
+echo "  bash # Use curl"
+echo "     curl http://localhost:8000/health"
+echo "     curl \"http://localhost:8000/properties?zip_code=78704\""
+echo ""
+echo "  bash # View documentation"
+echo "     http://localhost:8000/docs       (Swagger UI)"
+echo "     http://localhost:8000/redoc      (ReDoc)"
+
+echo -e "\n${GREEN}📦 RESPONSE EXAMPLE:${NC}"
+echo '  {'
+echo '    "zip_code": "78704",'
+echo '    "count": 20,'
+echo '    "timestamp": "2024-01-15 14:30:45 CST (UTC-0600)",'
+echo '    "timezone": "America/Chicago",'
+echo '    "properties": [ { ... }, ... ]'
+echo '  }'
+
+echo -e "\n${GREEN}🎯 INVESTMENT SCORE COMPONENTS:${NC}"
+echo "  Price Score        (0-25)   - Lower price/sqft = higher"
+echo "  Location Score     (0-25)   - Newer properties = higher"
+echo "  Market Trend Score (0-25)   - Recent listings = higher"
+echo "  Amenity Score      (0-25)   - Closer to shops = higher"
+echo "  TOTAL              (0-100)  - Composite score"
+
+echo -e "\n${GREEN}📚 DOCUMENTATION:${NC}"
+echo "  Start here:                README.md"
+echo "  Complete API reference:    API_DOCUMENTATION.md"
+echo "  n8n setup & examples:      N8N_INTEGRATION.md"
+echo "  Installation guide:        SETUP_GUIDE.md"
+echo "  What was created:          DELIVERABLES.md"
+echo "  Python examples:           examples.py"
+
+echo -e "\n${GREEN}💡 COMMON COMMANDS:${NC}"
+echo ""
+echo "  # Start API server"
+echo "  python app.py"
+echo ""
+echo "  # Start MCP server"
+echo "  python mcp_server.py"
+echo ""
+echo "  # Run examples"
+echo "  python examples.py"
+echo ""
+echo "  # Test health"
+echo "  curl http://localhost:8000/health"
+echo ""
+echo "  # Get properties with timezone"
+echo "  curl \"http://localhost:8000/properties?zip_code=78704&timezone=America/Chicago\""
+echo ""
+echo "  # Filter properties"
+echo "  curl \"http://localhost:8000/properties/78704/filter?min_price=300000&max_price=500000\""
+echo ""
+echo "  # Get statistics"
+echo "  curl \"http://localhost:8000/properties/78704/stats?timezone=America/Chicago\""
+
+echo -e "\n${GREEN}🚢 DEPLOYMENT:${NC}"
+echo "  Development:  python app.py"
+echo "  Docker:       docker run -p 8000:8000 realestateapi"
+echo "  Production:   gunicorn -w 4 -b 0.0.0.0:8000 app:app"
+
+echo -e "\n${GREEN}✅ CHECKLIST:${NC}"
+echo "  [ ] Install requirements: pip install -r requirements_api.txt"
+echo "  [ ] Start API: python app.py"
+echo "  [ ] Test health: curl http://localhost:8000/health"
+echo "  [ ] View docs: http://localhost:8000/docs"
+echo "  [ ] Run examples: python examples.py"
+echo "  [ ] Test timezone: curl \"...?timezone=America/Chicago\""
+echo "  [ ] Import Postman collection"
+echo "  [ ] Set up n8n workflow"
+echo "  [ ] Configure API keys in config.py"
+echo "  [ ] Deploy to production"
+
+echo -e "\n${BLUE}╔═══════════════════════════════════════════════════════════╗${NC}"
+echo -e "${BLUE}║  Ready to go! Start with: python app.py                  ║${NC}"
+echo -e "${BLUE}╚═══════════════════════════════════════════════════════════╝${NC}\n"

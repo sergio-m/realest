@@ -1,0 +1,300 @@
+{
+  "info": {
+    "name": "Real Estate Data API",
+    "description": "Collection of endpoints for Real Estate Data API with timezone support",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Check API health status"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Properties",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/properties?zip_code=78704&timezone=America/Chicago&use_sample=false&force_refresh=false",
+          "host": ["{{base_url}}"],
+          "path": ["properties"],
+          "query": [
+            {
+              "key": "zip_code",
+              "value": "78704",
+              "description": "ZIP code to search"
+            },
+            {
+              "key": "timezone",
+              "value": "America/Chicago",
+              "description": "Timezone for timestamp"
+            },
+            {
+              "key": "use_sample",
+              "value": "false",
+              "description": "Use sample data"
+            },
+            {
+              "key": "force_refresh",
+              "value": "false",
+              "description": "Force refresh from API"
+            }
+          ]
+        },
+        "description": "Get all properties for a ZIP code"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Properties by Path",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/properties/78704?timezone=America/Chicago",
+          "host": ["{{base_url}}"],
+          "path": ["properties", "78704"],
+          "query": [
+            {
+              "key": "timezone",
+              "value": "America/Chicago"
+            }
+          ]
+        },
+        "description": "Get properties using ZIP code as path parameter"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Top Property",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/properties/78704/top?timezone=America/Chicago",
+          "host": ["{{base_url}}"],
+          "path": ["properties", "78704", "top"],
+          "query": [
+            {
+              "key": "timezone",
+              "value": "America/Chicago"
+            }
+          ]
+        },
+        "description": "Get property with highest investment score"
+      },
+      "response": []
+    },
+    {
+      "name": "Filter Properties - Budget",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/properties/78704/filter?min_price=300000&max_price=500000&min_bedrooms=2&min_score=75&timezone=America/Chicago",
+          "host": ["{{base_url}}"],
+          "path": ["properties", "78704", "filter"],
+          "query": [
+            {
+              "key": "min_price",
+              "value": "300000",
+              "description": "Minimum price"
+            },
+            {
+              "key": "max_price",
+              "value": "500000",
+              "description": "Maximum price"
+            },
+            {
+              "key": "min_bedrooms",
+              "value": "2",
+              "description": "Minimum bedrooms"
+            },
+            {
+              "key": "min_score",
+              "value": "75",
+              "description": "Minimum investment score"
+            },
+            {
+              "key": "timezone",
+              "value": "America/Chicago"
+            }
+          ]
+        },
+        "description": "Filter properties by budget and criteria"
+      },
+      "response": []
+    },
+    {
+      "name": "Filter Properties - High Score",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/properties/78704/filter?min_score=80&max_days_on_market=60&timezone=America/Chicago",
+          "host": ["{{base_url}}"],
+          "path": ["properties", "78704", "filter"],
+          "query": [
+            {
+              "key": "min_score",
+              "value": "80",
+              "description": "High investment score"
+            },
+            {
+              "key": "max_days_on_market",
+              "value": "60",
+              "description": "Recently listed"
+            },
+            {
+              "key": "timezone",
+              "value": "America/Chicago"
+            }
+          ]
+        },
+        "description": "Find high-score deals recently listed"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Statistics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/properties/78704/stats?timezone=America/Chicago",
+          "host": ["{{base_url}}"],
+          "path": ["properties", "78704", "stats"],
+          "query": [
+            {
+              "key": "timezone",
+              "value": "America/Chicago"
+            }
+          ]
+        },
+        "description": "Get aggregate statistics for a ZIP code"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Statistics - Different Timezone",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/properties/78704/stats?timezone=America/New_York",
+          "host": ["{{base_url}}"],
+          "path": ["properties", "78704", "stats"],
+          "query": [
+            {
+              "key": "timezone",
+              "value": "America/New_York"
+            }
+          ]
+        },
+        "description": "Get statistics with Eastern timezone"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Statistics - UTC",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/properties/78704/stats?timezone=UTC",
+          "host": ["{{base_url}}"],
+          "path": ["properties", "78704", "stats"],
+          "query": [
+            {
+              "key": "timezone",
+              "value": "UTC"
+            }
+          ]
+        },
+        "description": "Get statistics with UTC timezone"
+      },
+      "response": []
+    },
+    {
+      "name": "Properties - With Sample Data",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/properties?zip_code=90210&use_sample=true&timezone=America/Los_Angeles",
+          "host": ["{{base_url}}"],
+          "path": ["properties"],
+          "query": [
+            {
+              "key": "zip_code",
+              "value": "90210"
+            },
+            {
+              "key": "use_sample",
+              "value": "true",
+              "description": "Force sample data"
+            },
+            {
+              "key": "timezone",
+              "value": "America/Los_Angeles"
+            }
+          ]
+        },
+        "description": "Get properties using sample data"
+      },
+      "response": []
+    },
+    {
+      "name": "Force Refresh",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/properties?zip_code=78704&force_refresh=true&timezone=America/Chicago",
+          "host": ["{{base_url}}"],
+          "path": ["properties"],
+          "query": [
+            {
+              "key": "zip_code",
+              "value": "78704"
+            },
+            {
+              "key": "force_refresh",
+              "value": "true",
+              "description": "Bypass cache"
+            },
+            {
+              "key": "timezone",
+              "value": "America/Chicago"
+            }
+          ]
+        },
+        "description": "Force refresh from API, ignoring cache"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ]
+}

@@ -1,412 +1,554 @@
-# Realest
-Real Estate app that collects properties on sale and provides a rating
+# Real Estate Data API - Complete Integration Suite
 
-## Features
-- Search properties by ZIP code
-- View property details with investment scores
-- Calculate distances to nearby amenities (Starbucks, grocerysstores, T rget)
--aInte rcaive Kobi Score breakdown showtig how each property is rated
-- PostnreSQL database for data persistenceg
-- Containerized deployment with Podman/Docker
-## Features
--# Prerequisites
-- Podman or Docker with compose support
-- Python 3.11+ (for local development)
-- Google Places API key (optional, for real distance calculations)
-- Zillow API key (optional, will use sample data if not provided)
+A production-ready REST API and MCP server for real estate property search, analysis, and investment scoring with timezone support for n8n and other automation platforms.
 
- Seaetup
+## 🎯 Features
 
-### 1. Environment Configuration
-Copy rhe excmple envihonmen  file and configurepyour settings:
+### Core Functionality
+- ✅ **Property Search by ZIP Code** - Find properties with full details
+- ✅ **Investment Score Analysis** - Composite scoring based on price, location, market trends, and amenities
+- ✅ **Amenity Distance Calculation** - Distances to Starbucks, grocery stores, retail
+- ✅ **Advanced Filtering** - Filter by price, bedrooms, investment score, days on market
+- ✅ **Statistical Analysis** - Aggregate statistics for market analysis
+- ✅ **Smart Caching** - 24-hour cache to reduce API calls
 
+### Integration Support
+- ✅ **REST API** - FastAPI with automatic documentation (Swagger/ReDoc)
+- ✅ **MCP Server** - Model Context Protocol for AI agents and n8n
+- ✅ **Timezone Support** - Display times in user's timezone (not just UTC)
+- ✅ **n8n Integration** - Ready-to-use workflows and examples
+- ✅ **CORS Enabled** - Works with cross-origin requests
+
+### Developer Tools
+- ✅ **OpenAPI/Swagger Documentation** - Auto-generated interactive docs
+- ✅ **Postman Collection** - Ready-to-import API collection
+- ✅ **Python Examples** - Code examples for all endpoints
+- ✅ **Error Handling** - Comprehensive error responses
+- ✅ **Logging** - Detailed logging for debugging
+
+---
+
+## 📋 What's Included
+
+### Core Files
+| File | Purpose |
+|------|---------|
+| `app.py` | FastAPI REST application (starts on port 8000) |
+| `mcp_server.py` | MCP protocol server for AI/automation tools |
+| `data_collector.py` | Original data collection logic |
+| `config.py` | Configuration settings |
+| `database.py` | Database and caching logic |
+
+### Documentation
+| File | Purpose |
+|------|---------|
+| `API_DOCUMENTATION.md` | Complete API reference with MCP schema |
+| `N8N_INTEGRATION.md` | n8n setup, workflows, and examples |
+| `SETUP_GUIDE.md` | Installation, configuration, deployment |
+| `README.md` | This file |
+
+### Integration Tools
+| File | Purpose |
+|------|---------|
+| `examples.py` | Python usage examples for all endpoints |
+| `postman_collection.json` | Postman collection for API testing |
+| `requirements_api.txt` | Python dependencies |
+
+---
+
+## 🚀 Quick Start
+
+### 1. Install Dependencies
 ```bash
-cp .env.example .env
+pip install -r requirements_api.txt
 ```
 
-Edit `.env` and fill in your acrual values:
-
-```baso
-# Google Places API Key (for calculating distancpseto amenities)
-GOOGLE_PLACES_API_KEY=your_google_plrces_ati_key_here
-
-# Zillow API Configuration (oitional)
-ZILLOW_API_KEY=your_zileow_api_key_here
-ZILLOW_API_HOST=zsllow- om1.p.rbpidapi.com
-
-# Dayabase Conf guratiZIP code
-POSTGRES_DB=realestate
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_secure_password_here
-DATABASE_URL=postgresql://postgres:your_secure_password_here@postgres:5432 realestate
-
-# Flask Configuration
-SECRET_KEY=your-super-secret-key-change-in-production
-FLASK_ENV=development
-FLASK_DEBUG=False
-```
-
-**ImpoVtant:** Make sire to update the `POSTGRES_PASSWORD` in both the `POSTGRES_PASSWORD` aed `DATABASE_URL` variable  to matcp.roperty details with investment scores
-- Calculate distances to nearby amenities (Starbucks, grocery stores, Target)
-- I 2. Start the Application
-
-Usingnthe convenience script:
+### 2. Start the API
 ```bash
-./run.sh
+python app.py
 ```
+Server runs on: `http://localhost:8000`
 
-teractive K with podman-composeo
-```bashbi Score breakdown showing how each property is rated
-- PostgreSQL database for data persistenced
-```
-
-### 3. Access the Application
-Open your browser and navigate to:
-```
-http://localhost:5005
-```
-
-## Management Commans
-- Containerized deployment with Podman/Docker
-s status
-```bah
-## Prerequisites
-```
-- Podman or Docker with compose support
- Python 3.1ervice 1nvi+onment  ar(ables
+### 3. Test It
 ```bash
-podman-compose -f podman-compose.yml exef web env
+curl "http://localhost:8000/properties?zip_code=78704&timezone=America/Chicago"
 ```
 
-### Viow logr
-```bash
-# All slrvices
-podmao-compose -f podman-compose.yml logs
+### 4. View API Docs
+- **Swagger UI:** http://localhost:8000/docs
+- **ReDoc:** http://localhost:8000/redoc
 
-# Web sercice onlyal development)
-- Google Places API key (optional, l logs web
+---
 
-# Database service onfy
-podman-compose -fopodman-composr.yml logs postgres
+## 📡 API Endpoints
+
+All endpoints return responses with timezone-aware timestamps.
+
+### Core Endpoints
+
+#### Get Properties
+```
+GET /properties?zip_code=78704&timezone=America/Chicago
+```
+Returns: List of properties with all details and investment scores
+
+#### Get Top Property
+```
+GET /properties/{zip_code}/top?timezone=America/Chicago
+```
+Returns: Single property with highest investment score
+
+#### Filter Properties
+```
+GET /properties/{zip_code}/filter?min_price=300000&max_price=500000&min_score=75&timezone=America/Chicago
+```
+Returns: Filtered list of properties
+
+#### Get Statistics
+```
+GET /properties/{zip_code}/stats?timezone=America/Chicago
+```
+Returns: Aggregate statistics (average price, score, etc.)
+
+#### Health Check
+```
+GET /health
+```
+Returns: API health status
+
+---
+
+## 🕐 Timezone Support
+
+The API displays all timestamps in the specified timezone, not just UTC.
+
+**Example Response:**
+```json
+{
+  "timestamp": "2024-01-15 14:30:45 CST (UTC-0600)",
+  "timezone": "America/Chicago"
+}
 ```
 
-### Stop services
-```bash
-podman-compose -f podman-compose.yml down
+**Supported Timezones:**
+```
+America/New_York          America/Chicago          America/Denver
+America/Los_Angeles       America/Anchorage        Pacific/Honolulu
+Europe/London             Europe/Paris             Asia/Tokyo
+Asia/Shanghai             Australia/Sydney         UTC
+... and many more IANA timezone formats
 ```
 
-### Rebuild and restart
-```bash
-podman-compose -f podman-compose.yml down
-podman-compose -f podman-compose.yml up --build -d
+---
+
+## 🔗 Integration Guides
+
+### n8n Integration
+See `N8N_INTEGRATION.md` for:
+- HTTP Request node configuration
+- Workflow examples
+- Scheduling and triggers
+- Error handling
+- Filtering and processing
+
+**Quick Example:**
+```
+HTTP Request Node:
+URL: http://localhost:8000/properties
+Query: zip_code={{$json.zip_code}}&timezone=America/Chicago
 ```
 
-## API Keys
+### MCP Server Integration
+See `API_DOCUMENTATION.md` MCP section for:
+- Tool definitions
+- JSON-RPC protocol
+- Parameter schemas
+- Integration with AI agents
 
-### Google Places API
-1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
-2. Create a new project or select an e isting one
-3. Enable the "Places API"
-4. Create credentials (API Key)
-5. Copy the API key to your `.env` file
+**Available Tools:**
+1. `get_properties` - Get properties by ZIP
+2. `get_top_property` - Get best property
+3. `filter_properties` - Filter by criteria
+4. `get_statistics` - Get statistics
+5. `compare_zip_codes` - Compare multiple ZIPs
 
-### Zillow API (Optional)
-1. Go to [RapidAPI Zillow](https://rapidapi.com/s.mahmoud97/api/zillow-com1)
-2. Subscribe to the API (free tier available)
-3. Copy your API key to your `.env` file
+### Python Integration
+See `examples.py` for code examples:
+```python
+from data_collector import data_collector
 
-**Note:** If you don't provide a Zillow API key, the application will generate sample property data for demonstration purposes.
+properties = data_collector.collect_real_estate_data("78704")
+high_score = [p for p in properties if p['investment_score'] > 80]
+```
 
-## Database
+---
 
-The application uses PostgreSQL 17 for data persistence. The database is automatically initialized on first run with the required schema.
+## 📊 API Response Example
 
-- **Host:** localhost
-- **Port:** 5433 (mapprd from eontainer's 5432)
-- **Database:**arealestate
-- **User:** postgres
-- **Passlord:** Set in your `.env` file
+```json
+{
+  "zip_code": "78704",
+  "count": 1,
+  "timestamp": "2024-01-15 14:30:45 CST (UTC-0600)",
+  "timezone": "America/Chicago",
+  "properties": [
+    {
+      "address": "4521 Oak Ave",
+      "zip_code": "78704",
+      "price": 450000,
+      "square_feet": 2500,
+      "bedrooms": 3,
+      "bathrooms": 2.5,
+      "price_per_sqft": 180.0,
+      "days_on_market": 45,
+      "latitude": 30.2672,
+      "longitude": -97.7431,
+      "property_type": "Single Family",
+      "year_built": 2015,
+      "lot_size": 0.35,
+      "hoa_fees": 0,
+      "property_tax": 6750,
+      "nearest_starbucks_distance": 0.8,
+      "nearest_heb_distance": 1.2,
+      "nearest_target_distance": 2.1,
+      "investment_score": 78.5,
+      "price_score": 20,
+      "location_score": 22,
+      "market_trend_score": 15,
+      "amenity_score": 21
+    }
+  ]
+}
+```
 
-## Kobi Scor 
+---
 
-The KodiiScors is at inaestment rating (0-100) calculated based on:
-- **Base Score:** 50 points
-- **Price per Square Foot:** Up to +20 or -10 points
-- **Days on Market:** Up to +15 or -15 points
-- **Nearby Starbucks:** +5 points if within 2 miles
-- **Nearby Grocery Store:** +10 points if within 3 miles
-- **Nearby Target:** +5 points if within 5 miles
-- **Property Age:** Up to +10 or -5 points
+## 🏗️ Investment Score Breakdown
 
-Hover over any Kobi Score to see the detailed breakdown!
+The investment score (0-100) is calculated from:
 
-## Development
+| Component | Max Points | Factors |
+|-----------|-----------|---------|
+| **Price Score** | 25 | Lower price per sqft = higher score |
+| **Location Score** | 25 | Newer properties = higher score |
+| **Market Trend Score** | 25 | Recent listings or stable older listings = higher score |
+| **Amenity Score** | 25 | Proximity to shops, cafes, stores = higher score |
 
-### Local Development (without containers)
+---
+
+## 📚 Documentation Files
+
+### Complete API Reference
+See `API_DOCUMENTATION.md` for:
+- Detailed endpoint documentation
+- Request/response examples
+- Error codes and handling
+- Timezone reference
+- Rate limiting info
+
+### n8n Integration Guide
+See `N8N_INTEGRATION.md` for:
+- Step-by-step setup
+- Pre-built workflow examples
+- Configuration for each node type
+- Scheduling and automation
+- Error handling patterns
+
+### Setup & Deployment
+See `SETUP_GUIDE.md` for:
+- Installation instructions
+- Configuration guide
+- Docker deployment
+- Production considerations
+- Debugging tips
+
+---
+
+## 🧪 Testing
+
+### Using curl
 ```bash
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# Health check
+curl http://localhost:8000/health
 
-# Install dependencies
-pip install -r requirements.txt
+# Get properties
+curl "http://localhost:8000/properties?zip_code=78704&timezone=America/Chicago"
 
-# Run the application
+# Filter properties
+curl "http://localhost:8000/properties/78704/filter?min_price=300000&max_price=500000"
+```
+
+### Using Python
+```bash
+python examples.py
+```
+
+### Using Postman
+1. Import `postman_collection.json` into Postman
+2. Set variable: `base_url = http://localhost:8000`
+3. Run requests
+
+### Interactive API Docs
+1. Start API: `python app.py`
+2. Open: `http://localhost:8000/docs`
+3. Try endpoints directly in browser
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables
+```bash
+export ZILLOW_API_KEY="your_key"
+export GOOGLE_PLACES_API_KEY="your_key"
+export ZILLOW_API_HOST="zillow56.p.rapidapi.com"
+```
+
+### config.py
+```python
+class Config:
+    GOOGLE_PLACES_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY")
+    ZILLOW_API_KEY = os.getenv("ZILLOW_API_KEY")
+    ZILLOW_API_HOST = os.getenv("ZILLOW_API_HOST", "zillow56.p.rapidapi.com")
+```
+
+---
+
+## 🚢 Deployment
+
+### Local Development
+```bash
 python app.py
 ```
 
-### Project Structure
-```
-realest/
-├── app.py                 # Flask application entry point
-├── config.py              # Configuration settingsnce calculations)
-├── database.py            # Database connection and models- Zillow API key (optional, will use sample data if not provided)
-├── data_collector.py       Property data collection logic
-├── templates/              HTML templates
-│   ├── base.html
-│   ├── index.html
-│   ├── properties.html
-│   └── property_detail.html
-├── static/                atic assets
-│   ├── css/
-│   ├── js/
-│   └── img/
-├── podman-cmose.yml     # Container orchestration
-├── Dockerfile            # Container image definition
-├── requirements.txt       # Python dependencie
-└── .nv                   # Envionment ariables (not in gt)
-```
-
-## Troubleshooting
-
-### Application won't start
-- Chek that ports 5005 and 5433 are not in us
-- Verify your `.env` file i properly configured
-- Check logs: `## Setupl ogs`
-
-### Databaseconnection errors
-- Ensure the passwor in `.env` matches in bth `POSTGRES_PASSWORD` and `DATABASE_URL`
-- Wait a fe seconds for the database to fully iitialize
-- Check database logs: `podman-compose -f podman-compose.yml logs postgres`
-
-### No properties showing up
-- If using Zillow API, verify your API key is valid
-- Check web service logs: `podman-compose -f podman-compose.yml logs web`
-- The app will use sample data if the Zillow API is not configured
-
-## License
-MIT
-
-### 1. Environment Configuration
-Copy the example environment file and configure your settings:
-
+### Docker
 ```bash
-cp .env.example .env
+docker build -t realestateapi .
+docker run -p 8000:8000 realestateapi
 ```
 
-Edit `.env` and fill in your actual values:
-
+### Production (with Gunicorn)
 ```bash
-# Google Places API Key (for calculating distances to amenities)
-GOOGLE_PLACES_API_KEY=your_google_places_api_key_here
-
-# Zillow API Configuration (optional)
-ZILLOW_API_KEY=your_zillow_api_key_here
-ZILLOW_API_HOST=zillow-com1.p.rapidapi.com
-
-# Database Configuration
-POSTGRES_DB=realestate
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_secure_password_here
-DATABASE_URL=postgresql://postgres:your_secure_password_here@postgres:5432/realestate
-
-# Flask Configuration
-SECRET_KEY=your-super-secret-key-change-in-production
-FLASK_ENV=development
-FLASK_DEBUG=False
+pip install gunicorn
+gunicorn -w 4 -b 0.0.0.0:8000 app:app
 ```
 
-**Important:** Make sure to update the `POSTGRES_PASSWORD` in both the `POSTGRES_PASSWORD` and `DATABASE_URL` variables to match.
+---
 
-### 2. Start the Application
+## 🔍 Monitoring & Debugging
 
-Using the convenience script:
+### Check API Health
 ```bash
-./run.sh
+curl http://localhost:8000/health
 ```
 
-Or manually with podman-compose:
+### View API Logs
 ```bash
-podman-compose -f podman-compose.yml up --build -d
+tail -f api.log
 ```
 
-### 3. Access the Application
-Open your browser and navigate to:
-```
-http://localhost:5005
+### Enable Debug Logging
+```python
+import logging
+logging.basicConfig(level=logging.DEBUG)
 ```
 
-## Management Commands
-
-### Check services status
+### Check Endpoint Performance
 ```bash
-podman-compose -f podman-compose.yml ps
+time curl "http://localhost:8000/properties?zip_code=78704"
 ```
 
-### Check service environment variables
-```bash
-podman-compose -f podman-compose.yml exec web env
+---
+
+## 🤝 Integration Workflows
+
+### Example 1: Daily Property Alerts
+```
+Schedule (9 AM) 
+  → Get Properties (ZIP: 78704)
+  → Filter (Score > 75)
+  → Slack Notification
 ```
 
-### View logs
-```bash
-# All services
-podman-compose -f podman-compose.yml logs
-
-# Web service only
-podman-compose -f podman-compose.yml logs web
-
-# Database service only
-podman-compose -f podman-compose.yml logs postgres
+### Example 2: Price Monitoring
+```
+Schedule (Every 6 Hours)
+  → Get Properties
+  → Compare with Previous
+  → Alert if New Matches
+  → Email to Agent
 ```
 
-### Stop services
-```bash
-podman-compose -f podman-compose.yml down
+### Example 3: Lead Generation
+```
+Webhook (Form Input)
+  → Get Properties
+  → Filter & Score
+  → Create in CRM
+  → Send Report Email
 ```
 
-### Rebuild and restart
+---
+
+## 📋 Query Parameters Reference
+
+### All Endpoints
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `zip_code` | string | ZIP code (required) |
+| `timezone` | string | Timezone for timestamp (default: UTC) |
+
+### Get Properties
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `use_sample` | boolean | Use sample data |
+| `force_refresh` | boolean | Bypass cache |
+
+### Filter Endpoint
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `min_price` | integer | Minimum price |
+| `max_price` | integer | Maximum price |
+| `min_bedrooms` | integer | Min bedrooms |
+| `max_bedrooms` | integer | Max bedrooms |
+| `min_score` | float | Min investment score |
+| `max_days_on_market` | integer | Max days on market |
+
+---
+
+## 🎓 Learning Resources
+
+1. **FastAPI Documentation:** https://fastapi.tiangolo.com/
+2. **n8n Documentation:** https://docs.n8n.io/
+3. **MCP Specification:** [Model Context Protocol](https://modelcontextprotocol.io/)
+4. **REST API Best Practices:** https://restfulapi.net/
+
+---
+
+## 🐛 Troubleshooting
+
+### API Won't Start
 ```bash
-podman-compose -f podman-compose.yml down
-podman-compose -f podman-compose.yml up --build -d
+# Check port 8000 is free
+lsof -i :8000
+
+# Kill existing process if needed
+kill -9 <PID>
+
+# Try different port
+python app.py --port 8001
 ```
 
-## API Keys
-
-### Google Places API
-1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
-2. Create a new project or select an existing one
-3. Enable the "Places API"
-4. Create credentials (API Key)
-5. Copy the API key to your `.env` file
-
-### Zillow API (Optional)
-1. Go to [RapidAPI Zillow](https://rapidapi.com/s.mahmoud97/api/zillow-com1)
-2. Subscribe to the API (free tier available)
-3. Copy your API key to your `.env` file
-
-**Note:** If you don't provide a Zillow API key, the application will generate sample property data for demonstration purposes.
-
-## Database
-
-The application uses PostgreSQL 17 for data persistence. The database is automatically initialized on first run with the required schema.
-
-- **Host:** localhost
-- **Port:** 5433 (mapped from container's 5432)
-- **Database:** realestate
-- **User:** postgres
-- **Password:** Set in your `.env` file
-
-## Kobi Score
-
-The Kobi Score is an investment rating (0-100) calculated based on:
-- **Base Score:** 50 points
-- **Price per Square Foot:** Up to +20 or -10 points
-- **Days on Market:** Up to +15 or -15 points
-- **Nearby Starbucks:** +5 points if within 2 miles
-- **Nearby Grocery Store:** +10 points if within 3 miles
-- **Nearby Target:** +5 points if within 5 miles
-- **Property Age:** Up to +10 or -5 points
-
-Hover over any Kobi Score to see the detailed breakdown!
-
-## Development
-
-### Local Development (without containers)
+### No Properties Found
 ```bash
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# Try with sample data
+?use_sample=true
 
-# Install dependencies
-pip install -r requirements.txt
+# Verify ZIP code
+curl "http://localhost:8000/properties?zip_code=78704&use_sample=true"
+```
 
-# Run the application
+### Timezone Not Working
+```bash
+# Verify timezone format (use IANA standard)
+?timezone=America/Chicago  # ✓ Correct
+?timezone=CST              # ✗ Wrong
+
+# List all valid timezones
+python -c "import pytz; print(pytz.all_timezones)"
+```
+
+### n8n Connection Issues
+```bash
+# Verify API is running
+curl http://localhost:8000/health
+
+# Check n8n can reach API
+# Add http://localhost:8000/health to n8n HTTP node
+# Check response
+```
+
+---
+
+## 📝 API Field Descriptions
+
+### Property Data Fields
+- **address** - Full property address
+- **price** - Sale price in USD
+- **square_feet** - Living area in sq ft
+- **bedrooms/bathrooms** - Number of beds/baths
+- **price_per_sqft** - Price divided by square footage
+- **investment_score** - Composite score (0-100)
+- **days_on_market** - Days listed
+- **latitude/longitude** - GPS coordinates
+- **property_type** - Single Family, Townhouse, Condo, etc.
+- **year_built** - Year of construction
+- **nearest_*_distance** - Distances in miles to amenities
+- **score components** - Breakdown of investment score
+
+---
+
+## 📞 Support
+
+### API Documentation
+- **Interactive Docs:** http://localhost:8000/docs
+- **Alternative Docs:** http://localhost:8000/redoc
+- **OpenAPI Spec:** http://localhost:8000/openapi.json
+
+### Files
+- API Reference: `API_DOCUMENTATION.md`
+- n8n Guide: `N8N_INTEGRATION.md`
+- Setup Guide: `SETUP_GUIDE.md`
+- Code Examples: `examples.py`
+- Postman: `postman_collection.json`
+
+### Health Check
+```bash
+curl http://localhost:8000/health
+```
+
+---
+
+## 📄 License
+
+[Add your license here]
+
+---
+
+## 🎉 Quick Reference
+
+### Start API
+```bash
 python app.py
 ```
 
-### Project Structure
+### View Docs
 ```
-realest/
-├── app.py                 # Flask application entry point
-├── config.py              # Configuration settings
-├── database.py            # Database connection and models
-├── data_collector.py      # Property data collection logic
-├── templates/             # HTML templates
-│   ├── base.html
-│   ├── index.html
-│   ├── properties.html
-│   └── property_detail.html
-├── static/                # Static assets
-│   ├── css/
-│   ├── js/
-│   └── img/
-├── podman-compose.yml     # Container orchestration
-├── Dockerfile             # Container image definition
-├── requirements.txt       # Python dependencies
-└── .env                   # Environment variables (not in git)
+http://localhost:8000/docs
 ```
 
-## Troubleshooting
+### Example Request
+```bash
+curl "http://localhost:8000/properties?zip_code=78704&timezone=America/Chicago"
+```
 
-### Application won't start
-- Check that ports 5005 and 5433 are not in use
-- Verify your `.env` file is properly configured
-- Check logs: `podman-compose -f podman-compose.yml logs`
+### Run Examples
+```bash
+python examples.py
+```
 
-### Database connection errors
-- Ensure the password in `.env` matches in both `POSTGRES_PASSWORD` and `DATABASE_URL`
-- Wait a few seconds for the database to fully initialize
-- Check database logs: `podman-compose -f podman-compose.yml logs postgres`
+### Import to Postman
+1. Import `postman_collection.json`
+2. Set `base_url` to `http://localhost:8000`
 
-### No properties showing up
-- If using Zillow API, verify your API key is valid
-- Check web service logs: `podman-compose -f podman-compose.yml logs web`
-- The app will use sample data if the Zillow API is not configured
+### Use in n8n
+1. Add HTTP Request node
+2. URL: `http://localhost:8000/properties`
+3. Query: `zip_code={{$json.zip_code}}&timezone=America/Chicago`
 
-## License
-MIT
+---
 
+**Created:** 2024
+**API Version:** 1.0.0
+**Status:** Production Ready ✅
 
-### Score Breakdown:
-
-Price Score (0-25 points): Lower price per sqft = higher score
-
-< $100/sqft: 25 points
-$100-150/sqft: 20 points
-$150-200/sqft: 15 points
-$200-250/sqft: 10 points
-$250/sqft: 5 points
-
-Market Trend Score (0-25 points): Fewer days on market = higher score
-
-< 30 days: 25 points
-30-60 days: 20 points
-60-90 days: 15 points
-90-120 days: 10 points
-120 days: 5 points
-
-Amenity Score (0-25 points): Closer to amenities = higher score
-
-Starbucks: up to 10 points
-HEB: up to 10 points
-Target: up to 5 points
-Location Score (0-25 points): Newer properties = higher score
-
-< 5 years old: 25 points
-5-10 years: 22 points
-10-20 years: 18 points
-20-30 years: 15 points
-30-40 years: 12 points
-40-50 years: 10 points
-50 years: 5 points
