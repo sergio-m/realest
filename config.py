@@ -15,7 +15,7 @@ class Config:
     # Database Configuration
     DATABASE_URL = os.getenv(
         'DATABASE_URL',
-        'postgresql://postgres:rulez@localhost:5433/realestate'
+        'postgresql://postgres:postgres@localhost:5433/realestate'
     )
 
     # Flask Configuration
